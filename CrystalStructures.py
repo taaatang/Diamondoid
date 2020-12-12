@@ -82,6 +82,35 @@ Tetramantane121Coords[20,:] = [0.0,  0.5,  -0.5]
 Tetramantane121Coords[21,:] = [-0.75, 0.25, 1.25]
 
 
+nPentamantane1234Coords = 26
+Pentamantane1234Coords = np.zeros((nPentamantane1234Coords,3))
+Pentamantane1234Coords[0,:] = [1.  ,  1.  ,  1.  ]
+Pentamantane1234Coords[1,:] = [ 0.  ,  1.  ,  1.  ]
+Pentamantane1234Coords[2,:] = [ 1.  ,  0.  ,  1.  ]
+Pentamantane1234Coords[3,:] = [ 1.  ,  1.  ,  0.  ]
+Pentamantane1234Coords[4,:] = [ 1.  ,  0.5 ,  0.5 ]
+Pentamantane1234Coords[5,:] = [ 1.  ,  0.5 ,  1.5 ]
+Pentamantane1234Coords[6,:] = [ 1.  ,  1.5 ,  0.5 ]
+Pentamantane1234Coords[7,:] = [ 0.5 ,  0.5 ,  1.  ]
+Pentamantane1234Coords[8,:] = [ 0.5 ,  1.5 ,  1.  ]
+Pentamantane1234Coords[9,:] = [ 1.5 ,  0.5 ,  1.  ]
+Pentamantane1234Coords[10,:] = [ 0.5 ,  1.  ,  0.5 ]
+Pentamantane1234Coords[11,:] = [ 0.5 ,  1.  ,  1.5 ]
+Pentamantane1234Coords[12,:] = [ 1.5 ,  1.  ,  0.5 ]
+Pentamantane1234Coords[13,:] = [ 0.75,  0.25,  0.75]
+Pentamantane1234Coords[14,:] = [ 0.75,  1.25,  0.75]
+Pentamantane1234Coords[15,:] = [ 0.25,  1.25,  1.25]
+Pentamantane1234Coords[16,:] = [ 1.25,  0.25,  1.25]
+Pentamantane1234Coords[17,:] = [ 1.25,  1.25,  0.25]
+Pentamantane1234Coords[18,:] = [ 0.25,  0.75,  0.75]
+Pentamantane1234Coords[19,:] = [ 1.25,  0.75,  0.75]
+Pentamantane1234Coords[20,:] = [ 0.75,  0.75,  0.25]
+Pentamantane1234Coords[21,:] = [ 0.75,  0.75,  1.25]
+Pentamantane1234Coords[22,:] = [ 0.25,  0.25,  0.25]
+Pentamantane1234Coords[23,:] = [ 0.5 ,  0.  ,  0.5 ]
+Pentamantane1234Coords[24,:] = [ 0.  ,  0.5 ,  0.5 ]
+Pentamantane1234Coords[25,:] = [ 0.5 ,  0.5 ,  0.  ]
+
 
 # Visualization
 
@@ -99,6 +128,8 @@ for ix in range(3):
 #points3d(TriamantaneCoords[:,0], TriamantaneCoords[:,1], \
 #         TriamantaneCoords[:,2], resolution = 16, scale_factor=0.2)        
          
-points3d(AdamantaneCoords[:,0], AdamantaneCoords[:,1], \
-         AdamantaneCoords[:,2], resolution = 16, color = (0,1,1), scale_factor=0.2)  
+#points3d(AdamantaneCoords[:,0], AdamantaneCoords[:,1], \
+#         AdamantaneCoords[:,2], resolution = 16, color = (0,1,1), scale_factor=0.2)  
 
+points3d(Pentamantane1234Coords[:,0], Pentamantane1234Coords[:,1], \
+         Pentamantane1234Coords[:,2], resolution = 16, color = (0,1,1), scale_factor=0.2)  
