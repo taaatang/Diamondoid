@@ -85,19 +85,20 @@ Tetramantane121Coords[21,:] = [-0.75, 0.25, 1.25]
 
 # Visualization
 
+
+for ix in range(3):
+    for iy in range(3):
+        for iz in range(3):
+            points3d(AdamantaneCoords[:,0] + ix, AdamantaneCoords[:,1] + iy, \
+                     AdamantaneCoords[:,2] + iz, resolution = 16, color = (1,1,1), \
+                     scale_factor=0.2)                      
+
 #points3d(Tetramantane121Coords[:,0], Tetramantane121Coords[:,1], \
 #         Tetramantane121Coords[:,2], resolution = 16, scale_factor=0.2)         
  
 #points3d(TriamantaneCoords[:,0], TriamantaneCoords[:,1], \
 #         TriamantaneCoords[:,2], resolution = 16, scale_factor=0.2)        
          
-#points3d(AdamantaneCoords[:,0], AdamantaneCoords[:,1], \
-#         AdamantaneCoords[:,2], resolution = 16, scale_factor=0.2)  
+points3d(AdamantaneCoords[:,0], AdamantaneCoords[:,1], \
+         AdamantaneCoords[:,2], resolution = 16, color = (0,1,1), scale_factor=0.2)  
 
-
-for ix in range(3):
-    for iy in range(3):
-        for iz in range(3):
-            points3d(AdamantaneCoords[:,0] + ix, AdamantaneCoords[:,1] + iy, \
-                     AdamantaneCoords[:,2] + iz, resolution = 16, scale_factor=0.2)                      
-         
