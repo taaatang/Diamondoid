@@ -1,0 +1,9 @@
+Data
+.vscode
+.ipynb_checkpoints
+__pycache__
+
+*.app
+*.out
+*.exe
+*.o
