@@ -1,9 +1,11 @@
-Data
-.vscode
+#.vscode
+
 .ipynb_checkpoints
 __pycache__
 
+Data
+
+*.o
 *.app
 *.out
 *.exe
-*.o
