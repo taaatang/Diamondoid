@@ -21,10 +21,11 @@ void Initialization(){
     mkdir_fs(DataPath);
     EvalProps();
     save(false);
-    // printInfo();
+    printInfo();
 }
 
 void SingleStep(){
+    stepCount++;
     PredictorStep();
     PredictorStepQ();
     GenSiteCoords();
@@ -38,9 +39,11 @@ void SingleStep(){
     ApplyBoundaryCond();
     EvalProps();
     save(true);
-    if(stepCount%stepAdjustTemp==(stepAdjustTemp-1))AdjustTemp();
+    if(stepCount%stepAdjustTemp==0) AdjustTemp();
     if(stepCount%stepPrintInfo==0) printInfo();
 }
+
+bool NotFinished(){return stepCount<tstepNum;}
 
 RMat ComputeInert(){
     double mass = 1.0/MassSites.size();

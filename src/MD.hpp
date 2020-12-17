@@ -51,6 +51,7 @@ void AdjustTemp();
 void EvalProps();
 void save(bool isapp);
 void SingleStep();
+bool NotFinished();
 void printInfo();
 
 #endif // __MD_H__

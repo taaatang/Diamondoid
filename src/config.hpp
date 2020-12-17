@@ -6,9 +6,9 @@
 const Vec3d region = {10., 10., 10.}; // box for MD simulation with PBC
 const int MolNum = 50;
 const int siteNum = 10;
-const double dt = 0.01;
+const double dt = 0.005;
 const double dt2 = dt * dt;
-const int tstepNum = 10000;
+const int tstepNum = 1000;
 int stepCount = 0;
 const double temp = 1.0;
 const int stepAdjustTemp = 20;
