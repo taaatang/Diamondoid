@@ -11,5 +11,11 @@ int main(){
     while(NotFinished()){
         SingleStep();
     }
+    InitMeasure();
+    while(NotFinishedMeasure()){
+        SingleStep();
+        if(isMeasureRdf())EvalRdf();
+    }
+    saveRdf();
     return 0;
 }

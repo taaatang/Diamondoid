@@ -11,6 +11,8 @@ Timer timer;
 void Initialization(){
     timer.tik();
     stepCount = 0;
+    dtemp = (tempI-tempF)/tstepNum;
+    isMeasure = false;
     ConstructMol();
     InitCoords();
     InitVels();
@@ -22,6 +24,15 @@ void Initialization(){
     EvalProps();
     save(false);
     printInfo();
+}
+
+void InitMeasure(){
+    isMeasure = true;
+    stepCount = 0;
+    countRdf = 0;
+    RdfDeltaR = rangeRdf/sizeHistRdf;
+    histRdf.resize(sizeHistRdf);
+    for(auto& item:histRdf)item=0;
 }
 
 void SingleStep(){
@@ -39,11 +50,43 @@ void SingleStep(){
     ApplyBoundaryCond();
     EvalProps();
     save(true);
-    if(stepCount%stepAdjustTemp==0) AdjustTemp();
+    if(stepCount%stepChangeTemp==0) ChangeTemp(tempI-dtemp*stepCount);
+    if((!isMeasure) and (stepCount%stepAdjustTemp==0)) AdjustTemp();
     if(stepCount%stepPrintInfo==0) printInfo();
 }
 
+void EvalRdf(){
+    if(countRdf>=limitRdf)return;
+    auto R2 = rangeRdf*rangeRdf;
+    for(int m1=0; m1<MolNum-1; m1++){
+        for(int m2=m1+1; m2<MolNum; m2++){
+            auto dR = mols[m1].r - mols[m2].r;
+            if(dR*dR<R2){
+                auto ms1 = m1*siteNum;
+                auto ms2 = m2*siteNum;
+                for(int j1=0; j1<siteNum; j1++){
+                    for(int j2=0; j2<siteNum; j2++){
+                        auto dr = fsites[ms1+j1].r - fsites[ms2+j2].r;
+                        auto r2 = dr*dr;
+                        if(r2<R2){
+                            int n = int(std::sqrt(r2)/RdfDeltaR);
+                            histRdf.at(n) += 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    countRdf++;
+    if(countRdf==limitRdf){
+        double fac = region[0]*region[1]*region[2]/(2.*M_PI*std::pow(RdfDeltaR,3.)*MolNum*MolNum*countRdf);
+        for(int n = 0; n < sizeHistRdf; n++) histRdf.at(n) *= fac/(n+.5)/(n+.5);
+    }
+}
+
 bool NotFinished(){return stepCount<tstepNum;}
+bool NotFinishedMeasure(){return stepCount<tmeasureNum;}
+bool isMeasureRdf(){return stepCount/stepRdf==0;}
 
 RMat ComputeInert(){
     double mass = 1.0/MassSites.size();
@@ -66,8 +109,8 @@ void ConstructMol(){
     Vec3d MassCenter = {0., 0., 0.};
     for(auto v:MassSites) MassCenter = MassCenter + v;
     MassCenter = MassCenter/double(MassSites.size());
-    for(auto& v:LJSites) v = v - MassCenter;
-    for(auto& v:MassSites) v = v - MassCenter;
+    for(auto& v:LJSites) v = (v - MassCenter)*lengthFac;
+    for(auto& v:MassSites) v = (v - MassCenter)*lengthFac;
     auto IMat = ComputeInert();
     if(!isDiag(IMat)){std::cout<<"IMat is not diagonal!\n"; exit(1);}
     mInert = getDiag(IMat);
@@ -342,8 +385,18 @@ void ApplyBoundaryCond(){
     #pragma omp parallel for
     for(int n=0; n<MolNum; n++){
         for(int i=0; i<3; i++){
-            if(mols[n].r[i]>=0.5*region[i])mols[n].r[i]-=region[i];
-            else if(mols[n].r[i]<-0.5*region[i])mols[n].r[i]+=region[i];
+            auto rt = mols[n].r[i];
+            double num;
+            if(mols[n].r[i]>=0.5*region[i] or mols[n].r[i]<-0.5*region[i]){
+                num = std::floor((mols[n].r[i]+0.5*region[i])/region[i]);
+                mols[n].r[i]-=num*region[i];
+            }
+            if(mols[n].r[i]>=0.5*region[i] or mols[n].r[i]<-0.5*region[i]){
+                std::cout<<"PBC Fail!\n";
+                std::cout<<"origin coord:"<<rt<<"\n";
+                std::cout<<"coord:"<<mols[n].r[i]<<", num:"<<num<<"\n";
+                exit(1);
+            }
         }
     }
 }
@@ -438,12 +491,30 @@ void save(bool isapp){
     save<double>(&ETransK,1,&outfile,ETKFile,isapp);
     save<double>(&ERotK,1,&outfile,ERKFile,isapp);
     save<double>(&EPot,1,&outfile,EVFile,isapp);
-    for(auto site:fsites){
-        save<double>(site.r.data(),3,&outfile,PosFile,isapp);
+    if(isapp){
+        for(auto site:fsites){
+            save<double>(site.r.data(),3,&outfile,PosFile,isapp);
+        }
+    }else{
+        save<double>(fsites[0].r.data(),3,&outfile,PosFile,false);
+        for(int i = 1; i < fsites.size(); i++){
+            save<double>(fsites[0].r.data(),3,&outfile,PosFile,true);
+        }
     }
+}
+
+void saveRdf(){
+    std::ofstream outfile;
+    save<double>(&RdfDeltaR,1,&outfile,HistRdfDeltaRFile);
+    save<double>(histRdf.data(),histRdf.size(),&outfile,HistRdfFile);
 }
 
 void printInfo(){
     std::cout<<"\nStep:"<<stepCount<<", Time Passed:"<<timer.elapse()<<"ms"\
         <<"\nETransK:"<<ETransK<<", ERotK:"<<ERotK<<", EPot:"<<EPot<<"\n";
+}
+
+void ChangeTemp(double T){
+    temp = T;
+    velMag = std::sqrt(3.*(1.-1./MolNum)*temp);
 }

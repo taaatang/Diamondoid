@@ -11,6 +11,7 @@ Vec4d EulerToQuat(const Vec3d& ang);
 void InitAngVels();
 void InitAngAccels();
 void Initialization();
+void InitMeasure();
 // LJ Potential
 double PairPotential(Vec3d r1, Vec3d r2);
 // LJ Force
@@ -48,10 +49,15 @@ double ComputeRK();
 // Temperature Control
 void ApplyThermostat();
 void AdjustTemp();
+void ChangeTemp(double T);
 void EvalProps();
 void save(bool isapp);
+void saveRdf();
 void SingleStep();
+void EvalRdf();
 bool NotFinished();
+bool NotFinishedMeasure();
+bool isMeasureRdf();
 void printInfo();
 
 #endif // __MD_H__
