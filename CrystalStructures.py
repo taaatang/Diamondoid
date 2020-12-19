@@ -1,5 +1,5 @@
 import numpy as np
-from mayavi.mlab import * 
+from mayavi.mlab import *
 
 
 
@@ -33,6 +33,25 @@ AdamantaneCoords[7,:] = [0.250000,   0.250000,   0.250000]
 AdamantaneCoords[8,:] = [0.250000,   0.750000,   0.750000]
 AdamantaneCoords[9,:] = [0.750000,   0.750000,   0.250000]
 
+# {0.75, 0.25, -0.25},\
+# {0.25, 0.75, -0.25},\
+# {0.0, 0.0, 0.0},\
+# {1.0, 1.0, 0.0},\
+# {0.75, -0.25, 0.25},\
+# {0.25, -0.25, 0.75},\
+# {1.25, 0.25, 0.25},\
+# {1.25, 0.75, 0.75},\
+# {-0.25, 0.75, 0.25},\
+# {-0.25, 0.25, 0.75},\
+# {0.25, 1.25, 0.25},\
+# {0.75, 1.25, 0.75},\
+# {1.0, 0.0, 1.0},\
+# {0.0, 1.0, 1.0},\
+# {0.25, 0.25, 1.25},\
+# {0.75, 0.75, 1.25}
+
+
+# potential:
 
 nTriamantaneCoords = 18
 TriamantaneCoords = np.zeros((nTriamantaneCoords,3))
@@ -120,16 +139,16 @@ for ix in range(3):
         for iz in range(3):
             points3d(AdamantaneCoords[:,0] + ix, AdamantaneCoords[:,1] + iy, \
                      AdamantaneCoords[:,2] + iz, resolution = 16, color = (1,1,1), \
-                     scale_factor=0.2)                      
+                     scale_factor=0.2)
 
 #points3d(Tetramantane121Coords[:,0], Tetramantane121Coords[:,1], \
-#         Tetramantane121Coords[:,2], resolution = 16, scale_factor=0.2)         
- 
+#         Tetramantane121Coords[:,2], resolution = 16, scale_factor=0.2)
+
 #points3d(TriamantaneCoords[:,0], TriamantaneCoords[:,1], \
-#         TriamantaneCoords[:,2], resolution = 16, scale_factor=0.2)        
-         
+#         TriamantaneCoords[:,2], resolution = 16, scale_factor=0.2)
+
 #points3d(AdamantaneCoords[:,0], AdamantaneCoords[:,1], \
-#         AdamantaneCoords[:,2], resolution = 16, color = (0,1,1), scale_factor=0.2)  
+#         AdamantaneCoords[:,2], resolution = 16, color = (0,1,1), scale_factor=0.2)
 
 points3d(Pentamantane1234Coords[:,0], Pentamantane1234Coords[:,1], \
-         Pentamantane1234Coords[:,2], resolution = 16, color = (0,1,1), scale_factor=0.2)  
+         Pentamantane1234Coords[:,2], resolution = 16, color = (0,1,1), scale_factor=0.2)
