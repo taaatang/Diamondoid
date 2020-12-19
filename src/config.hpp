@@ -5,7 +5,7 @@
 #include "global.hpp"
 const Vec3d region = {12., 12., 12.}; // box for MD simulation with PBC
 const int MolNum = 27;
-const int siteNum = 10;
+const int siteNum = 18;
 const double dt = 0.001;
 const double dt2 = dt * dt;
 const int tstepNum = 15000;
@@ -29,7 +29,7 @@ const int stepRdf = 50;
 const int limitRdf = 100;
 int countRdf  = 0;
 
-std::string DataPath = "Data/Adamantane_27";
+std::string DataPath = "Data/Triamantane_8";
 std::string ETKFile = DataPath + "/ETK";
 std::string ERKFile = DataPath + "/ERK";
 std::string EVFile = DataPath + "/EV";

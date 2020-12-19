@@ -11,22 +11,45 @@
     kB = 1
 */
 const double lengthFac = 4./std::sqrt(3.)*std::pow(2.,1./6.);
-const std::array<Vec3d,10> Adamantane = {Vec3d{0., 0.5, 0.5},\
-                                       Vec3d{1., 0.5, 0.5},\
-                                       Vec3d{0.5, 0.5, 0.},\
-                                       Vec3d{0.5, 0.5, 1.},\
-                                       Vec3d{0.5, 0., 0.5},\
-                                       Vec3d{0.5, 1., 0.5},\
-                                       Vec3d{0.75, 0.25, 0.75},\
-                                       Vec3d{0.25, 0.25, 0.25},\
-                                       Vec3d{0.25, 0.75, 0.75},\
-                                       Vec3d{0.75, 0.75, 0.25}};
+const std::array<Vec3d,10> Adamantane = {\
+    Vec3d{0., 0.5, 0.5},\
+    Vec3d{1., 0.5, 0.5},\
+    Vec3d{0.5, 0.5, 0.},\
+    Vec3d{0.5, 0.5, 1.},\
+    Vec3d{0.5, 0., 0.5},\
+    Vec3d{0.5, 1., 0.5},\
+    Vec3d{0.75, 0.25, 0.75},\
+    Vec3d{0.25, 0.25, 0.25},\
+    Vec3d{0.25, 0.75, 0.75},\
+    Vec3d{0.75, 0.75, 0.25}\
+};
+const std::array<Vec3d,18>  Triamantane= {\
+    Vec3d{-1.000000,   0.000000,   1.000000},\
+    Vec3d{0.000000,   0.000000,   0.000000},\
+    Vec3d{-1.000000,   0.500000,   0.500000},\
+    Vec3d{0.000000,   0.500000,   0.500000},\
+    Vec3d{-0.500000,   0.500000,   0.000000},\
+    Vec3d{-0.500000,   0.500000,   1.000000},\
+    Vec3d{-0.500000,   0.000000,   0.500000},\
+    Vec3d{-0.500000,   1.000000,   0.500000},\
+    Vec3d{-0.250000,   0.250000,   0.750000},\
+    Vec3d{-0.750000,   0.250000,   0.250000},\
+    Vec3d{0.250000,   0.250000,   0.250000},\
+    Vec3d{-0.750000,   0.750000,   0.750000},\
+    Vec3d{-0.250000,   0.750000,   0.250000},\
+    Vec3d{-1.250000,   0.250000,   0.750000},\
+    Vec3d{-0.750000,  -0.250000,   0.750000},\
+    Vec3d{-0.250000,  -0.250000,   0.250000},\
+    Vec3d{-0.250000,   0.250000,  -0.250000},\
+    Vec3d{-0.75, 0.25, 1.25},\
+};
+
 const Vec3d ucell = {4.0,4.0,4.0};
 // Ix,Iy,Iz
 Vec3d mInert;
 // LJ interaction sites of a molecule
-std::array<Vec3d,siteNum> LJSites = Adamantane;
-std::array<Vec3d,siteNum> MassSites = Adamantane;
+std::array<Vec3d,siteNum> LJSites = Triamantane;
+std::array<Vec3d,siteNum> MassSites = Triamantane;
 
 struct FSite{
     Vec3d f,r;
