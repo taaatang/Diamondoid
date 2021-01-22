@@ -2,16 +2,30 @@
 #define __ATOM_H__
 
 #include <array>
-const std::array<std::array<int,3>,4> A = {{{{1,1,1}},{{-1,-1,1}},{{1,-1,-1}},{{-1,1,-1}}}};
-const std::array<std::array<int,3>,4> B = {{{{-1,-1,-1}},{{1,1,-1}},{{-1,1,1}},{{1,-1,1}}}};
+#include <vector>
+
+enum class Type{A,B};
+const std::array<std::array<int,3>,4> ANN = {{{{1,1,1}},{{-1,-1,1}},{{1,-1,-1}},{{-1,1,-1}}}};
+const std::array<std::array<int,3>,4> BNN = {{{{-1,-1,-1}},{{1,1,-1}},{{-1,1,1}},{{1,-1,1}}}};
+const std::array<int,3> A0 = {{0,0,0}};
+const std::array<int,3> B0 = {{1,1,1}};
+const std::array<int,3> a = {{2,2,0}}, b = {{0,2,2}}, c = {{2,0,2}};
 struct Atom{
-    Atom(bool state, std::array<int,3> coord_in):is_full(state){coord = coord; for(auto& el:NN)el=nullptr;}
+    Atom(Type type_in, std::array<int,3> coord_in, int idx_in=-1):idx(idx_in), type(type_in){coord = coord_in; for(auto& el:NN)el=nullptr;}
     ~Atom(){}
-    void addNN(int idx, Atom* NNptr){NN[idx]=NNptr;}
-    bool is_full{false};
-    std::array<int,3> coord;
-    std::array<Atom*,4> NN;
+    void classNN(std::vector<int>& filled, std::vector<int>& empty);
+    int countFilledNN() const {int count = 0; for(const auto& nn:NN){if(nn->idx!=-1)count++;} return count;};
+    int pos{0}; // postion in Lattice::latt vector
+    int idx{-1}; // belongs to idx-th molecule. idx=-1 means empty
+    Type type; // two carbon atoms in a unit cell
+    std::array<int,3> coord; // coord in a,b,c. a=[4,0,0], b=[0,4,0], c=[0,0,4]
+    std::array<Atom*,4> NN; //pointer to nearest neighbors
 };
+void Atom::classNN(std::vector<int>& filled, std::vector<int>& empty){
+    filled.clear(); empty.clear();
+    for(int i=0; i<4; i++){if(NN[i]->idx==-1) empty.push_back(i); else filled.push_back(i);}
+}
+
 inline bool operator<(const Atom& lhs, const Atom& rhs){
     return lhs.coord<rhs.coord;
 }

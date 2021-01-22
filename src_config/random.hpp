@@ -6,8 +6,11 @@
 std::mt19937 generatorI;
 template<size_t N>
 std::uniform_int_distribution<int> distributionI(0,N);
-template<size_t N>
-int diceI(){return distributionI<N>(generatorI);}
+
+int diceI(int N){
+    std::uniform_int_distribution<int> distributionI(0,N);
+    return distributionI(generatorI);
+}
 
 std::mt19937 generatorD;
 std::uniform_real_distribution<double> distributionD(0.0,1.0);
