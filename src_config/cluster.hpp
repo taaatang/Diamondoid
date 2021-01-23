@@ -13,7 +13,6 @@
 #include "lattice.hpp"
 #include "random.hpp"
 
-const int MAX_MC_STEP = 1000;
 const int MAX_TRY = 10;
 const double TEMP = 0.2;
 
@@ -56,11 +55,11 @@ void Cluster::init(std::vector<Adamantane>& mols){
     int count = 0;
     for(auto& mol:mols) {
         mol.idx = count; count++;
-        if(!add(&mol)){std::cout<<"\nFailed to add a molecule!\n"; exit(1);}
+        if(!add(&mol)){std::cout<<"Failed to add a molecule!\n"; exit(1);}
         else structure.push_back(&mol);
     }
     computeSurf();
-    std::cout<<"\nFinished init. Total Bond: "<<countBond()<<".\n";
+    std::cout<<"Finished init. Total Bond: "<<countBond()<<".\n";
 }
 
 void Cluster::singleStep(){

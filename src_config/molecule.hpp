@@ -17,7 +17,7 @@ public:
     int countBondCur();
     int countBondNext() const;
     bool isSurface() const;
-    int getRandRep() const {return diceI(repNum-1);}
+    int getRandRep() const {if(diceD()<0.25) return 0; else return 1;}
     void move();
     void putBack();
     void linkedAndSurf(std::vector<int>& linked, std::vector<int>& surf);
