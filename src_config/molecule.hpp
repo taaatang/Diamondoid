@@ -9,19 +9,6 @@
 #include "lattice.hpp"
 #include "random.hpp"
 
-using VecI=std::vector<int>;
-void unvisit(std::vector<Atom>* mol, VecI visited_idx){
-    for(auto idx:visited_idx){
-        mol->at(idx).is_visited=false;
-    }
-}
-
-void unvisit(std::vector<Atom>* mol){
-    for(auto& atom:(*mol)){
-        atom.is_visited=false;
-    }
-}
-
 class Molecule{
 public:
     Molecule(int idx_in){idx=idx_in; idmap = VecI(4,0);}

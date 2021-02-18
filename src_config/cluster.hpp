@@ -13,8 +13,8 @@
 #include "lattice.hpp"
 #include "random.hpp"
 
-const int MAX_TRY = 30;
-const double TEMP = 0.1;
+const int INIT_MAX_TRY = 30;
+const int MAX_TRY = 2;
 
 class Cluster{
 public:
@@ -23,7 +23,7 @@ public:
 
     Atom* getRandPos();
 
-    bool add(Molecule* mol);
+    bool add(Molecule* mol, int tryNum = 1);
     void push_back(Molecule* mol){structure.push_back(mol);}
     void computeSurf();
     void computePos();
@@ -33,6 +33,7 @@ public:
     void recenter();
     int countBond();
 
+    void setTemp(double T) { temp = T; }
     void init(std::vector<Molecule*>& mols);
     void singleStep();
     void compute();
@@ -40,7 +41,7 @@ public:
     void saveCoords(std::string filename);
     void saveSurface(std::string filename);
 
-private:
+    double temp;
     Lattice Latt;
     int curMolIdx;
     int totBond{0};
@@ -59,7 +60,10 @@ void Cluster::init(std::vector<Molecule*>& mols){
     int count = 0;
     for(auto& mol:mols) {
         mol->idx = count; count++;
-        if(!add(mol)){std::cout<<"Failed to add a molecule!\n"; exit(1);}
+        if(!add(mol, INIT_MAX_TRY)){
+            std::cout<<"Failed to add a molecule!\n";
+            exit(1);
+        }
         else structure.push_back(mol);
     }
     computeSurf();
@@ -72,7 +76,7 @@ void Cluster::singleStep(){
     auto molIdx = surface[i];
     auto mol = structure.at(molIdx);
     rmvPos(mol);
-    if(add(mol)){
+    if(add(mol, MAX_TRY)){
         computeSurf();
     }else{
         mol->putBack();
@@ -84,11 +88,11 @@ Atom* Cluster::getRandPos(){
     return &Latt.latt.at(positions.at(diceI(positions.size()-1)));
 }
 
-bool Cluster::add(Molecule* mol){
+bool Cluster::add(Molecule* mol, int tryNum){
     // mol->setid(structure.size());
     int count = 0;
     bool flag = false;
-    while(count<MAX_TRY){
+    while(count<tryNum){
         count++;
         // std::cout<<"Try add mol "<<mol->idx<<", count:"<<count<<"\n";
         auto dest = getRandPos();
@@ -97,7 +101,7 @@ bool Cluster::add(Molecule* mol){
             auto bondNum = mol->countBondNext();
             if(bondNum>mol->bondNum){flag=true;break;}
             else{
-                if(diceD()<std::exp((bondNum-mol->bondNum)/TEMP)){flag=true;break;}
+                if(diceD()<std::exp((bondNum-mol->bondNum)/temp)){flag=true;break;}
             }
         }
     }
