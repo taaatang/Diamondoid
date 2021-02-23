@@ -1,7 +1,7 @@
 # -*- Makefile -*-
 
 ## sherlock
-CXX = /usr/local/bin/g++-10
+CXX = g++
 CXXFLAGS = -std=c++17 -O3 -Wall
 
 all:main.out, MD.out, test.out
