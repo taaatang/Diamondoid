@@ -38,9 +38,13 @@ public:
     void singleStep();
     void compute();
 
+    void clustering(int size = 100);
+
     void saveCoords(std::string filename);
     void saveSurface(std::string filename);
+    void saveVacancy(std::string filename);
 
+private:
     double temp;
     Lattice Latt;
     int curMolIdx;
@@ -49,7 +53,49 @@ public:
     std::vector<int> surface;
     std::vector<int> positions;
     std::vector<int> compatible, uncompatible;
+    std::vector<int> vacancy;
 };
+
+void Cluster::clustering(int size) {
+    unvisit(&Latt.latt);
+    int empty = 0;
+    int occupied = 0;
+    vacancy.clear();
+    for (auto& atom : Latt.latt) {
+        if (atom.is_visited) continue;
+        int count = 0;
+        VecI pos;
+        std::queue<Atom*> q;
+        q.push(&atom);
+        atom.is_visited = true;
+        bool is_empty = (atom.idx==-1);
+        while (!q.empty()) {
+            auto a = q.front();
+            q.pop();
+            ++count;
+            if (is_empty and pos.size()<size) {
+                pos.push_back(a->pos);
+            }
+            for (auto& an:a->NN) {
+                if (!an or an->is_visited) continue;
+                if (is_empty == (an->idx==-1)) {
+                    an->is_visited = true;
+                    q.push(an);
+                }
+            }
+        }
+        if (is_empty) {
+            if (pos.size()<size) {
+                vacancy.insert(vacancy.end(), pos.begin(), pos.end());
+            }
+            ++empty;
+            std::cout<<"empty cluster "<<empty<<" size: "<<count<<"\n";
+        } else {
+            ++occupied;
+            std::cout<<"occupied cluster "<<occupied<<" size: "<<count<<"\n";
+        }
+    }
+}
 
 Cluster::Cluster(int na, int nb, int nc):Latt(na,nb,nc),curMolIdx(-1){
     positions.push_back(Latt.center->pos);
@@ -187,17 +233,34 @@ void Cluster::saveCoords(std::string filename){
 
 void Cluster::saveSurface(std::string filename) {
     std::ofstream outfile;
-    if (!compatible.empty()) {
-        save<int>(Latt.latt.at(compatible[0]).coord.data(), 3, &outfile, filename + "_comp.dat");
-        for (int i = 1; i < compatible.size(); ++i) {
-           save<int>(Latt.latt.at(compatible[i]).coord.data(), 3, &outfile, filename+"_comp.dat", true); 
-        }
+    save<int>(nullptr, 0, &outfile, filename + "_comp.dat"); 
+    for (int i = 0; i < compatible.size(); ++i) {
+        save<int>(Latt.latt.at(compatible[i]).coord.data(), 3, &outfile, filename+"_comp.dat", true); 
     }
-    if (!uncompatible.empty()) {
-        save<int>(Latt.latt.at(uncompatible[0]).coord.data(), 3, &outfile, filename + "_uncomp.dat");
-        for (int i = 1; i < uncompatible.size(); ++i) {
-           save<int>(Latt.latt.at(uncompatible[i]).coord.data(), 3, &outfile, filename+"_uncomp.dat", true); 
-        }
+    save<int>(nullptr, 0, &outfile, filename + "_uncomp.dat");
+    for (int i = 0; i < uncompatible.size(); ++i) {
+        save<int>(Latt.latt.at(uncompatible[i]).coord.data(), 3, &outfile, filename+"_uncomp.dat", true); 
+    }
+
+    // if (!compatible.empty()) {
+    //     save<int>(Latt.latt.at(compatible[0]).coord.data(), 3, &outfile, filename + "_comp.dat");
+    //     for (int i = 1; i < compatible.size(); ++i) {
+    //        save<int>(Latt.latt.at(compatible[i]).coord.data(), 3, &outfile, filename+"_comp.dat", true); 
+    //     }
+    // }
+    // if (!uncompatible.empty()) {
+    //     save<int>(Latt.latt.at(uncompatible[0]).coord.data(), 3, &outfile, filename + "_uncomp.dat");
+    //     for (int i = 1; i < uncompatible.size(); ++i) {
+    //        save<int>(Latt.latt.at(uncompatible[i]).coord.data(), 3, &outfile, filename+"_uncomp.dat", true); 
+    //     }
+    // }
+}
+
+void Cluster::saveVacancy(std::string filename) {
+    std::ofstream outfile;
+    save<int>(nullptr, 0, &outfile, filename);
+    for (int i = 0; i < vacancy.size(); ++i) {
+        save<int>(Latt.latt.at(vacancy[i]).coord.data(), 3, &outfile, filename, true); 
     }
 }
 #endif // __CLUSTER_H__
