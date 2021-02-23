@@ -1,10 +1,7 @@
-#include "math.h"
-#include "MD.hpp"
 #include "config.hpp"
 #include "molecule.hpp"
-#include "randoms.hpp"
-#include "utils.hpp"
-#include "algebra.hpp"
+
+#include "MD.hpp"
 
 Timer timer;
 

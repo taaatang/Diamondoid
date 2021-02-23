@@ -6,11 +6,13 @@
             "command": "/usr/bin/g++",
             "args": [
                 "-g",
+                "-O2",
                 "-std=c++17",
                 "${fileDirname}/src/*.cpp",
+                "${fileDirname}/src/*.hpp",
                 "${file}",
                 "-o",
-                "${fileDirname}/test.app",
+                "${fileDirname}/main.app",
                 // "${fileDirname}/${fileBasenameNoExtension}"
             ],
             "options": {

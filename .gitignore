@@ -1,6 +1,8 @@
 #.vscode
 
-Data
+data/
+
+build/
 
 *.o
 *.app

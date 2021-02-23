@@ -1,6 +1,12 @@
 #ifndef __MD_H__
 #define __MD_H__
+#include "math.h"
+#include "../utils/utils.hpp"
 #include "global.hpp"
+#include "algebra.hpp"
+#include "randoms.hpp"
+
+
 RMat ComputeInert();
 void ConstructMol();
 void InitCoords();

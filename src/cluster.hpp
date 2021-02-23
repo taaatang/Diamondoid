@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "../src/utils.hpp"
+#include "../utils/utils.hpp"
 
 #include "atom.hpp"
 #include "molecule.hpp"

@@ -1,10 +1,10 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "src/utils.hpp"
-#include "src_config/random.hpp"
-#include "src_config/molecule.hpp"
-#include "src_config/cluster.hpp"
+#include "utils/utils.hpp"
+#include "src/random.hpp"
+#include "src/molecule.hpp"
+#include "src/cluster.hpp"
 
 const int HEAT_STEP = 100000;
 const int COOL_STEP = 800000;

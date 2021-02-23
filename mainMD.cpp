@@ -1,7 +1,7 @@
 #include <iostream>
-#include "src/algebra.hpp"
-#include "src/randoms.hpp"
-#include "src/MD.hpp"
+#include "srcMD/algebra.hpp"
+#include "srcMD/randoms.hpp"
+#include "srcMD/MD.hpp"
 int main(){
     // std::cout<<"Mol size:"<<Adamantane.size()<<"\n";
     // for(auto a:Adamantane)std::cout<<a;

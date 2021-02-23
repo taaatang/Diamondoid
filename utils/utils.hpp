@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <iomanip>
 #include <fstream>
+#include <assert.h>
 
 class Timer{
     std::chrono::system_clock::time_point tik_, tok_;
@@ -25,9 +26,18 @@ public:
     }
 };
 
-inline void mkdir_fs(std::string dir){
-     bool succeed = std::filesystem::create_directories(dir);
-    //  assert_msg(succeed, dir + " failed to creat!");
+inline void assert_msg(bool condition, std::string msg){
+    if(!condition){
+        std::cout<<msg<<std::endl;
+        exit(1);
+    }
+}
+
+inline void mkdir_fs(std::string dir) {
+    std::filesystem::path p(dir);
+    std::filesystem::create_directories(p);
+    bool succeed = std::filesystem::is_directory(p);
+    assert_msg(succeed, dir + " failed to creat!");
 }
 
 template <class T>
