@@ -1,0 +1,13 @@
+data dir:s:/Users/tatang/Documents/work/projects/PPP/data
+molecule name:s:Ada # Ada | Tria | Tetra | Penta
+molecule num:i:4
+random seed:i:1
+heat step:i:10000
+anneal step:i:80000
+cool step:i:20000
+init T:d:3.0
+final T:d:0.01
+measure step:i:100
+TAdjust step:i:1000
+
+runid:s:0

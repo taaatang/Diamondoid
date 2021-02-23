@@ -29,7 +29,7 @@ Lattice::Lattice(int na, int nb, int nc):Na(na),Nb(nb),Nc(nc){
         latt.push_back(tmpb);
     }
     std::sort(latt.begin(), latt.end());
-    for(int i = 0; i < latt.size(); i++) latt[i].pos = i;
+    for(int i = 0; i < (int)latt.size(); i++) latt[i].pos = i;
     Atom tmp(Type::A, A0);
     auto low = std::lower_bound(latt.begin(), latt.end(), tmp);
     assert(low!=latt.end());

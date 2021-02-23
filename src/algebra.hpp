@@ -18,7 +18,7 @@ std::ostream& operator<<(std::ostream& os, const arr<N>& a){
 template <size_t N>
 arr<N> operator+(const arr<N>& a, const arr<N>& b){
     arr<N> c;
-    for(int i = 0; i < N; i++) c[i] = a[i] + b[i];
+    for(size_t i = 0; i < N; i++) c[i] = a[i] + b[i];
     return c;
 }
 
@@ -60,7 +60,7 @@ arr<N> operator*(const arr<N>& a, int b){
 template <size_t N>
 arr<N> operator*(int b, const arr<N>& a){
     arr<N> c;
-    for(int i = 0; i < N; i++) c[i] = a[i] * b;
+    for(size_t i = 0; i < N; i++) c[i] = a[i] * b;
     return c;
 }
 

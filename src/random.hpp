@@ -3,7 +3,9 @@
 
 #include <random>
 #include <functional>
-std::mt19937 generatorI;
+#include <chrono>
+
+std::mt19937_64 generatorI;
 template<size_t N>
 std::uniform_int_distribution<int> distributionI(0,N);
 
@@ -12,9 +14,21 @@ int diceI(int N){
     return distributionI(generatorI);
 }
 
-std::mt19937 generatorD;
+std::mt19937_64 generatorD;
 std::uniform_real_distribution<double> distributionD(0.0,1.0);
-auto diceD = std::bind(distributionD,generatorD);
+double diceD( ) {
+    return distributionD(generatorD);
+}
+// auto diceD = std::bind(distributionD,generatorD);
+
+void randomSeed(bool opt) {
+    if (opt) {
+        unsigned seedI = std::chrono::system_clock::now().time_since_epoch().count();
+        generatorI.seed(seedI);
+        unsigned seedD = std::chrono::system_clock::now().time_since_epoch().count();
+        generatorD.seed(seedD);
+    }
+}
 
 std::vector<int> FisherYatesShuffle(int n){
     std::vector<int> v(n,0);

@@ -26,7 +26,7 @@ public:
     VecI surf();
     void setNN(int from, int bondid, int to);
     void setNN(int from, VecI vto);
-    void setmolid(){for(int i = 0; i < mol->size(); i++)mol->at(i).pos = i;}
+    void setmolid(){for(int i = 0; i < (int)mol->size(); i++)mol->at(i).pos = i;}
     void genidmap(int root, Atom* dest);
     bool tryFill(Atom* dest);
     bool tryAll(Atom* dest);
@@ -208,7 +208,7 @@ bool Molecule::tryAll(Atom* dest) {
     if(dest==nullptr or dest->idx!=-1)return false;
     idmap = std::vector<int>{0,1,2,3};
     do {
-        for (int root = 0; root < mol->size(); ++root) {
+        for (int root = 0; root < (int)mol->size(); ++root) {
             next.clear();
             VecI visited_idx;
             std::queue<Atom*> rq,dq;

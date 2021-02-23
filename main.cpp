@@ -5,43 +5,41 @@
 #include "src/random.hpp"
 #include "src/molecule.hpp"
 #include "src/cluster.hpp"
-
-const int HEAT_STEP = 100000;
-const int COOL_STEP = 800000;
-const int MAX_MC_STEP = 100000;
-const int TOT_STEP = HEAT_STEP + COOL_STEP + MAX_MC_STEP;
-
-constexpr int MEASURE_STEP = 100;
-const int PRINT_STEP = (HEAT_STEP + COOL_STEP + MAX_MC_STEP)/10;
-
-const double INIT_TEMP = 3.0;
-const double FINAL_TEMP = 0.1;
-const int TAdjust_STEP = 1000;
-
-const int N_mol = 39;
+#include "src/config.hpp"
 
 int main() {
     Timer timer;
-    std::string dir = "data/Pentamantane_"+std::to_string(N_mol);
+    std::string dir = dataDir + "/" + molName + "mantane_" + std::to_string(molNum) + "/run" + runid;
     mkdir_fs(dir);
+    para.print(dir + "/para.txt");
+    randomSeed(isRandseed);
 
-    // // linear temperature
-    // auto temp = [=](int step) {
-    //     return INIT_TEMP + (FINAL_TEMP - INIT_TEMP) / MAX_MC_STEP * step;
-    // };
-
-    // exp temperature
+    // temperature
     auto temp = [=](int step) {
         if (step < HEAT_STEP) return INIT_TEMP;
-        else if (step > HEAT_STEP+COOL_STEP) return FINAL_TEMP;
-        else return INIT_TEMP + (FINAL_TEMP - INIT_TEMP) / COOL_STEP * (step-HEAT_STEP); 
+        else if (step > HEAT_STEP + ANNEAL_STEP) return FINAL_TEMP;
+        else return INIT_TEMP + (FINAL_TEMP - INIT_TEMP) / ANNEAL_STEP * (step-HEAT_STEP); 
         // else return INIT_TEMP + (FINAL_TEMP - INIT_TEMP) * (1.0 - std::exp((double)(step-HEAT_STEP)/COOL_STEP))/(1.0 - std::exp(1.0));
     };
 
     std::vector<Atom> Mol;
     timer.tik();
-    std::vector<Pentamantane> Mols(N_mol,Pentamantane(0,&Mol));
-    std::vector<Molecule*> Molsptr; for(auto& mol:Mols)Molsptr.push_back(&mol);
+    std::vector<Molecule*> Molsptr; 
+    for (int i = 0; i < molNum; ++i) {
+        if (molName == "Ada") {
+            Molsptr.push_back(new Adamantane(0, &Mol));
+        } else if (molName == "Tria") {
+            Molsptr.push_back(new Triamantane(0, &Mol));
+        } else if (molName == "Tetra") {
+            Molsptr.push_back(new Tetramantane(0, &Mol));
+        } else if (molName == "Penta") {
+            Molsptr.push_back(new Pentamantane(0, &Mol));
+        } else {
+            std::cout<<"molecule "<<molName<<"mantane not defined!\n";
+            exit(1);
+        }
+    }
+    std::cout<<molNum<<" "<<molName<<"mantanes are created!\n";
 
     // INIT
     Cluster clus(40,40,40);
@@ -49,14 +47,6 @@ int main() {
     clus.init(Molsptr);
     timer.tok();
     std::cout<<"Initialization time:"<<timer.elapse()/1000.0<<"s.\n\n";
-
-    // // HEAT
-    // timer.tik();
-    // for (int count = 0; count < HEAT_STEP; ++count) {
-    //     clus.singleStep();
-    // }
-    // timer.tok();
-    // std::cout<<"Heating time:"<<timer.elapse()/1000.0<<"s.\n\n";
 
     // MC
     timer.tik();
@@ -71,6 +61,13 @@ int main() {
             auto bnum = clus.countBond();
             bondNum.push_back(bnum);
             clus.saveCoords(outfile);
+
+            clus.computePos();
+            clus.evalPos();
+            clus.saveSurface(dir + "/step_"+std::to_string(mstep) + "_surface");
+
+            clus.clustering();
+            clus.saveVacancy(dir + "/step_"+std::to_string(mstep) + "_vacancy.dat");
         }
 
         if(stepCount%PRINT_STEP==0){
@@ -91,23 +88,24 @@ int main() {
     std::cout<<"\nMonte Carlo time:"<<timer.elapse()/1000.0<<"s.\n";
 
     // evaluate compatible/uncompatible surface positions
-    timer.tik();
-    std::cout<<"\nBegin evaluate surface positions...\n";
-    clus.computePos();
-    clus.evalPos();
-    clus.saveSurface(dir + "/surface");
-    std::cout<<"Surface evaluation time:"<<timer.elapse()/1000.0<<"s.\n";
-    timer.tok();
+    // timer.tik();
+    // std::cout<<"\nBegin evaluate surface positions...\n";
+    // clus.computePos();
+    // clus.evalPos();
+    // clus.saveSurface(dir + "/surface");
+    // std::cout<<"Surface evaluation time:"<<timer.elapse()/1000.0<<"s.\n";
+    // timer.tok();
 
     // clustering occupied/unoccupied sites. discovering vacancy
-    timer.tik();
-    clus.clustering();
-    clus.saveVacancy(dir + "/vacancy.dat");
-    timer.tok();
-    std::cout<<"Clustering time:"<<timer.elapse()/1000.0<<"s.\n";
-
-  
-    
+    // timer.tik();
+    // clus.clustering();
+    // clus.saveVacancy(dir + "/vacancy.dat");
+    // timer.tok();
+    // std::cout<<"Clustering time:"<<timer.elapse()/1000.0<<"s.\n";
     // clus.saveCoords(outfile);
+
+    for (auto& p : Molsptr) {
+        delete p;
+    }
     return 0;
 }

@@ -73,7 +73,7 @@ void Cluster::clustering(int size) {
             auto a = q.front();
             q.pop();
             ++count;
-            if (is_empty and pos.size()<size) {
+            if (is_empty and (int)pos.size()<size) {
                 pos.push_back(a->pos);
             }
             for (auto& an:a->NN) {
@@ -85,14 +85,14 @@ void Cluster::clustering(int size) {
             }
         }
         if (is_empty) {
-            if (pos.size()<size) {
+            if ((int)pos.size()<size) {
                 vacancy.insert(vacancy.end(), pos.begin(), pos.end());
             }
             ++empty;
-            std::cout<<"empty cluster "<<empty<<" size: "<<count<<"\n";
+            // std::cout<<"empty cluster "<<empty<<" size: "<<count<<"\n";
         } else {
             ++occupied;
-            std::cout<<"occupied cluster "<<occupied<<" size: "<<count<<"\n";
+            // std::cout<<"occupied cluster "<<occupied<<" size: "<<count<<"\n";
         }
     }
 }
@@ -161,7 +161,7 @@ bool Cluster::add(Molecule* mol, int tryNum){
 
 void Cluster::computeSurf(){
     surface.clear();
-    for(int i=0; i<structure.size(); i++){
+    for(int i=0; i < (int)structure.size(); i++){
         if(structure[i]->isSurface()) surface.push_back(i);
     }
 }
@@ -225,20 +225,20 @@ void Cluster::saveCoords(std::string filename){
     if(structure.empty()) return;
     std::ofstream outfile;
     save<int>(structure[0]->cur[0]->coord.data(),3,&outfile,filename);
-    for(int i = 1; i<structure[0]->cur.size(); i++)save<int>(structure[0]->cur[i]->coord.data(),3,&outfile,filename,true);
-    for(int m = 1; m<structure.size(); m++){
-        for(int i = 0; i<structure[m]->cur.size();i++)save<int>(structure[m]->cur[i]->coord.data(),3,&outfile,filename,true);
+    for(int i = 1; i < (int)structure[0]->cur.size(); i++)save<int>(structure[0]->cur[i]->coord.data(),3,&outfile,filename,true);
+    for(int m = 1; m < (int)structure.size(); m++){
+        for(int i = 0; i<(int)structure[m]->cur.size();i++)save<int>(structure[m]->cur[i]->coord.data(),3,&outfile,filename,true);
     }
 }
 
 void Cluster::saveSurface(std::string filename) {
     std::ofstream outfile;
     save<int>(nullptr, 0, &outfile, filename + "_comp.dat"); 
-    for (int i = 0; i < compatible.size(); ++i) {
+    for (int i = 0; i < (int)compatible.size(); ++i) {
         save<int>(Latt.latt.at(compatible[i]).coord.data(), 3, &outfile, filename+"_comp.dat", true); 
     }
     save<int>(nullptr, 0, &outfile, filename + "_uncomp.dat");
-    for (int i = 0; i < uncompatible.size(); ++i) {
+    for (int i = 0; i < (int)uncompatible.size(); ++i) {
         save<int>(Latt.latt.at(uncompatible[i]).coord.data(), 3, &outfile, filename+"_uncomp.dat", true); 
     }
 
@@ -259,7 +259,7 @@ void Cluster::saveSurface(std::string filename) {
 void Cluster::saveVacancy(std::string filename) {
     std::ofstream outfile;
     save<int>(nullptr, 0, &outfile, filename);
-    for (int i = 0; i < vacancy.size(); ++i) {
+    for (int i = 0; i < (int)vacancy.size(); ++i) {
         save<int>(Latt.latt.at(vacancy[i]).coord.data(), 3, &outfile, filename, true); 
     }
 }
