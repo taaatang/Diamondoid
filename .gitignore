@@ -4,6 +4,8 @@ data/
 
 build/
 
+Job/
+
 *.o
 *.app
 *.out
