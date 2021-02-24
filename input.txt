@@ -1,23 +1,24 @@
-data dir:s:/Users/tatang/Documents/work/projects/PPP/data
-molecule name:s:Ada # Ada 10 | Tria 18 | Tetra 22 | Penta 26
-molecule num:i:1000
+data dir:s:/oak/stanford/groups/tpd/tatang/PPP
+#molecule name:s:Ada # Ada 10 | Tria 18 | Tetra 22 | Penta 26
+#molecule num:i:200
+#molecule num:i:1000
 
-# molecule name:s:Tria
-# molecule num:i:556
+#molecule name:s:Tria
+#molecule num:i:111#556
 
-# molecule name:s:Tetra
-# molecule num:i:455
+#molecule name:s:Tetra
+#molecule num:i:91#455
 
-# molecule name:s:Penta
-# molecule num:i:385
+molecule name:s:Penta
+molecule num:i:400#385
 
 random seed:i:1
-heat step:i:100000
-anneal step:i:800000
-cool step:i:200000
-init T:d:3.0
-final T:d:0.01
-measure step:i:100
+heat step:i:10000
+anneal step:i:80000
+cool step:i:10000
+init T:d:2.5
+final T:d:0.1
+measure step:i:500
 TAdjust step:i:1000
 
 runid:s:RUNID
