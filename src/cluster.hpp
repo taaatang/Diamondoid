@@ -13,7 +13,7 @@
 #include "lattice.hpp"
 #include "random.hpp"
 
-const int INIT_MAX_TRY = 30;
+const int INIT_MAX_TRY = 100000;
 const int MAX_TRY = 2;
 
 class Cluster{
