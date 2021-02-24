@@ -7,15 +7,15 @@ cwd=$(pwd)
 # source ./${env}
 # cd ${cwd}
 
-molname=Ada
-JobDir=/Job/${molname}
+molname=Penta100
+JobDir=Job/${molname}
 keyword1=RUNID
 keyword2=MOLNAME
 app=main.out
 script=run_sherlock.sh
 input=input.txt
 
-for i in $(seq 0 1 10)
+for i in $(seq 0 1 0)
     do
         appDir=${JobDir}/run_${i}
         mkdir -p ${appDir}
