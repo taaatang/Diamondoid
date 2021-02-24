@@ -1,6 +1,6 @@
 #include "paras.hpp"
 
-Parameters para("/Users/tatang/Documents/work/projects/PPP", {"input.txt"});
+Parameters para(".", {"input.txt"});
 
 std::string dataDir = para.maps.at("data dir");
 std::string molName = para.maps.at("molecule name");
