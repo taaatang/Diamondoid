@@ -42,7 +42,7 @@ class Adamantane:public Molecule{
 public:
     Adamantane(int idx_in, std::vector<Atom>* mol_);
     ~Adamantane(){};
-    bool tryFill(Atom* dest, int repidx);
+    // bool tryFill(Atom* dest, int repidx);
     static bool mol_is_set;
 };
 bool Adamantane::mol_is_set{false};
@@ -78,6 +78,14 @@ public:
     static bool mol_is_set;
 };
 bool Pentamantane::mol_is_set{false};
+
+class Pentamantane1212:public Molecule{
+public:
+    Pentamantane1212(int idx_in, std::vector<Atom>* mol_);
+    ~Pentamantane1212(){};
+    static bool mol_is_set;
+};
+bool Pentamantane1212::mol_is_set{false};
 
 int Molecule::countBondCur(){
     int count = 0;
@@ -267,18 +275,22 @@ Adamantane::Adamantane(int idx_in,std::vector<Atom>* mol_):Molecule(idx_in){
 Diamantane::Diamantane(int idx_in,std::vector<Atom>* mol_):Molecule(idx_in){
     mol = mol_;
     if(!mol_is_set){
-        mol->resize(10);
+        mol->resize(14);
         setmolid();
-        setNN(0,0,-1); setNN(0,1,1); setNN(0,2,2); setNN(0,3,3);
-        setNN(1,0,6); setNN(1,1,0); setNN(1,2,-1); setNN(1,3,-1);
-        setNN(2,0,5); setNN(2,1,-1); setNN(2,2,0); setNN(2,3,-1);
-        setNN(3,0,4); setNN(3,1,-1); setNN(3,2,-1); setNN(3,3,0);
-        setNN(4,0,3); setNN(4,1,7); setNN(4,2,9); setNN(4,3,-1);
-        setNN(5,0,2); setNN(5,1,8); setNN(5,2,-1); setNN(5,3,9);
-        setNN(6,0,1); setNN(6,1,-1); setNN(6,2,8); setNN(6,3,7);
-        setNN(7,0,-1); setNN(7,1,4); setNN(7,2,-1); setNN(7,3,6);
-        setNN(8,0,-1); setNN(8,1,5); setNN(8,2,6); setNN(8,3,-1);
-        setNN(9,0,-1); setNN(9,1,-1); setNN(9,2,4); setNN(9,3,5);
+        setNN(0,{-1,1,3,2});
+        setNN(1,{4,0,-1,-1});
+        setNN(2,{5,-1,-1,0});
+        setNN(3,{9,-1,0,-1});
+        setNN(4,{1,-1,6,8});
+        setNN(5,{2,8,7,-1});
+        setNN(6,{11,9,4,-1});
+        setNN(7,{12,-1,5,9});
+        setNN(8,{10,5,-1,4});
+        setNN(9,{3,6,-1,7});
+        setNN(10,{8,-1,13,-1});
+        setNN(11,{6,-1,-1,13});
+        setNN(12,{7,13,-1,-1});
+        setNN(13,{-1,12,10,11});
         mol_is_set = true;
     }
 }
@@ -372,6 +384,41 @@ Pentamantane::Pentamantane(int idx_in,std::vector<Atom>* mol_):Molecule(idx_in){
         setNN(23,{-1,-1,16,15});
         setNN(24,{-1,16,-1,17});
         setNN(25,{8,18,20,22});
+        mol_is_set = true;
+    }
+}
+
+Pentamantane1212::Pentamantane1212(int idx_in,std::vector<Atom>* mol_):Molecule(idx_in){
+    mol = mol_;
+    if(!mol_is_set){
+        mol->resize(26);
+        setmolid();
+        setNN(0,{-1,-1,1,2});
+        setNN(1,{3,4,0,-1});
+        setNN(2,{6,5,-1,0});
+        setNN(3,{1,-1,-1,7});
+        setNN(4,{-1,1,-1,8});
+        setNN(5,{-1,2,8,9});
+        setNN(6,{2,-1,7,10});
+        setNN(7,{11,12,6,3});
+        setNN(8,{12,-1,5,4});
+        setNN(9,{13,-1,-1,5});
+        setNN(10,{14,13,-1,6});
+        setNN(11,{7,-1,-1,15});
+        setNN(12,{8,7,-1,16});
+        setNN(13,{9,10,16,17});
+        setNN(14,{10,-1,15,18});
+        setNN(15,{19,20,14,11});
+        setNN(16,{20,-1,13,12});
+        setNN(17,{21,-1,-1,13});
+        setNN(18,{22,21,-1,14});
+        setNN(19,{15,-1,-1,23});
+        setNN(20,{16,15,-1,24});
+        setNN(21,{17,18,24,-1});
+        setNN(22,{18,-1,23,-1});
+        setNN(23,{-1,25,22,19});
+        setNN(24,{25,-1,21,20});
+        setNN(25,{24,23,-1,-1});
         mol_is_set = true;
     }
 }

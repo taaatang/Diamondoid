@@ -28,12 +28,16 @@ int main() {
     for (int i = 0; i < molNum; ++i) {
         if (molName == "Ada") {
             Molsptr.push_back(new Adamantane(0, &Mol));
+        } else if (molName == "Dia") {
+            Molsptr.push_back(new Diamantane(0, &Mol));
         } else if (molName == "Tria") {
             Molsptr.push_back(new Triamantane(0, &Mol));
         } else if (molName == "Tetra") {
             Molsptr.push_back(new Tetramantane(0, &Mol));
         } else if (molName == "Penta") {
             Molsptr.push_back(new Pentamantane(0, &Mol));
+        } else if (molName == "Penta1212") {
+            Molsptr.push_back(new Pentamantane1212(0, &Mol));
         } else {
             std::cout<<"molecule "<<molName<<"mantane not defined!\n";
             exit(1);
