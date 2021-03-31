@@ -3,6 +3,7 @@
 
 data/
 Jupyter/pics/
+Jupyter/testPics
 *.jpg
 *.png
 *.eps
