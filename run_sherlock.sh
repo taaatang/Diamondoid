@@ -12,4 +12,4 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-user=taaatang@gmail.com
 # export OMP_NUM_THREADS=4
-mpirun -n 1 /Users/tatang/Documents/work/projects/PPP/build/main.out
+srun -n 1 /Users/tatang/Documents/work/projects/PPP/build/main.out

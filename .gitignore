@@ -1,11 +1,13 @@
 #.vscode
+.DS_Store
 
 data/
-
+Jupyter/pics/
 *.jpg
 *.png
 *.eps
 *.svg
+*.mp4
 
 build/
 

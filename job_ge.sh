@@ -8,14 +8,14 @@ cwd=$(pwd)
 # cd ${cwd}
 
 molname=Ada
-JobDir=/Job/${molname}
+JobDir=Job/${molname}
 keyword1=RUNID
 keyword2=MOLNAME
 app=main.out
 script=run_sherlock.sh
 input=input.txt
 
-for i in $(seq 0 1 10)
+for i in $(seq 0 1 6)
     do
         appDir=${JobDir}/run_${i}
         mkdir -p ${appDir}
