@@ -22,6 +22,21 @@ int main() {
         // else return INIT_TEMP + (FINAL_TEMP - INIT_TEMP) * (1.0 - std::exp((double)(step-HEAT_STEP)/COOL_STEP))/(1.0 - std::exp(1.0));
     };
 
+    auto measureBond = [=](int step) {
+        return step % MEASURE_STEP == 0;
+    };
+
+    auto measureStruc = [=](int step) {
+        int equil_step = HEAT_STEP + ANNEAL_STEP;
+        int m1 = equil_step / 20;
+        int m2 = COOL_STEP / 20;
+        if (step <= equil_step) {
+            return step % m1 == 0;
+        } else {
+            return (step - equil_step) % m2 == 0;
+        }
+    };
+
     std::vector<Atom> Mol;
     timer.tik();
     std::vector<Molecule*> Molsptr; 
@@ -51,7 +66,7 @@ int main() {
     clus.init(Molsptr);
     timer.tok();
     std::cout<<"Initialization time:"<<timer.elapse()/1000.0<<"s.\n\n";
-
+    int mstep = 0;
     // MC
     timer.tik();
     std::vector<int> bondNum;
@@ -59,11 +74,13 @@ int main() {
 
         clus.singleStep();
 
-        if(stepCount%MEASURE_STEP==0){
-            int mstep = stepCount / MEASURE_STEP;
-            std::string outfile = dir + "/step_"+std::to_string(mstep)+".dat";
+        if(measureBond(stepCount)){
             auto bnum = clus.countBond();
             bondNum.push_back(bnum);
+        }
+        if (measureStruc(stepCount)) {
+            ++mstep;
+            std::string outfile = dir + "/step_"+std::to_string(mstep)+".dat";
             clus.saveCoords(outfile);
 
             clus.computePos();
