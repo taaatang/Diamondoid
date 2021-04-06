@@ -2,8 +2,7 @@
 .DS_Store
 
 data/
-Jupyter/pics/
-Jupyter/testPics
+Jupyter/
 *.jpg
 *.png
 *.eps
