@@ -1,9 +1,21 @@
 #.vscode
+.vscode
+.idea
+.DS_Store
 
-.ipynb_checkpoints
-__pycache__
+data/
+Jupyter/
+PPP/
 
-Data
+input.txt
+
+*.jpg
+*.png
+*.eps
+*.svg
+*.mp4
+
+build/
 
 *.o
 *.app
