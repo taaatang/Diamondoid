@@ -104,41 +104,42 @@ Cluster::Cluster(int na, int nb, int nc):Latt(na,nb,nc),curMolIdx(-1){
 void Cluster::init(std::vector<Molecule*>& mols){
     std::cout<<"\nBegin init...\n";
     int count = 0;
-    for(auto& mol:mols) {
-        mol->idx = count; count++;
-        if(!add(mol, INIT_MAX_TRY)){
-            std::cout<<"Failed to add a molecule!\n";
+    for(auto &mol : mols) {
+        mol->idx = count; 
+        count++;
+        if(!add(mol, INIT_MAX_TRY)) {
+            std::cout << "Failed to add a molecule!\n";
             exit(1);
         }
         else structure.push_back(mol);
     }
     computeSurf();
     computePos();
-    std::cout<<"Finished init. Total Bond: "<<countBond()<<".\n";
+    std::cout << "Finished init. Total Bond: " << countBond() << ".\n";
 }
 
-void Cluster::singleStep(){
+void Cluster::singleStep(double d) {
     auto i = diceI(surface.size()-1);
     auto molIdx = surface[i];
     auto mol = structure.at(molIdx);
     rmvPos(mol);
-    if(add(mol, MAX_TRY)){
+    if(add(mol, MAX_TRY, d)) {
         computeSurf();
-    }else{
+    } else {
         mol->putBack();
         addPos(mol);
     }
 }
 
-Atom* Cluster::getRandPos(){
+Atom* Cluster::getRandPos() {
     return &Latt.latt.at(positions.at(diceI(positions.size()-1)));
 }
 
-bool Cluster::add(Molecule* mol, int tryNum){
+bool Cluster::add(Molecule* mol, int tryNum, double d) {
     // mol->setid(structure.size());
     int count = 0;
     bool flag = false;
-    while(count<tryNum){
+    while(count < tryNum) {
         count++;
         // std::cout<<"Try add mol "<<mol->idx<<", count:"<<count<<"\n";
         auto dest = getRandPos();
