@@ -22,7 +22,7 @@ public:
 
     Atom* getRandPos();
 
-    bool add(Molecule* mol, int tryNum = 1);
+    bool add(Molecule* mol, int tryNum = 1, double d = -1.0);
     void push_back(Molecule* mol){structure.push_back(mol);}
     void computeSurf();
     void computePos();
@@ -34,7 +34,7 @@ public:
 
     void setTemp(double T) { temp = T; }
     void init(std::vector<Molecule*>& mols);
-    void singleStep();
+    void singleStep(double d = -1.0);
     void compute();
 
     void clustering(int size = 100);
@@ -143,16 +143,21 @@ bool Cluster::add(Molecule* mol, int tryNum, double d) {
         // std::cout<<"Try add mol "<<mol->idx<<", count:"<<count<<"\n";
         auto dest = getRandPos();
         // if(mol->tryFill(dest,mol->getRandRep())){
-        if(mol->tryFill(dest)){
+        if(mol->tryFill(dest)) {
+            // limit the distance a molecule can move in a single step
+            if (d > 0 && mol->jumpDistance() > d) {
+                continue;
+            }
             auto bondNum = mol->countBondNext();
-            if(bondNum>mol->bondNum){flag=true;break;}
-            else{
-                if(diceD()<std::exp((bondNum-mol->bondNum)/temp)){flag=true;break;}
+            if(bondNum > mol->bondNum || diceD() < std::exp((bondNum - mol->bondNum) / temp)) {
+                flag = true;
+                break;
             }
         }
     }
     if(flag) {
-        mol->move();addPos(mol); 
+        mol->move();
+        addPos(mol); 
         // std::cout<<"Succeed Jump!\n";
     }
     // else std::cout<<"Failed Jump!\n";
