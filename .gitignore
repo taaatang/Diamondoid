@@ -5,6 +5,10 @@
 
 data/
 Jupyter/
+PPP/
+
+input.txt
+
 *.jpg
 *.png
 *.eps
