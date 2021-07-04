@@ -1,74 +1,75 @@
 #ifndef __ALGEBRA_H__
 #define __ALGEBRA_H__
 
-#include <array>
 #include <iostream>
+#include <array>
+#include <cmath>
 
 template <size_t N>
 using arr = std::array<int,N>;
 
 template <size_t N>
-std::ostream& operator<<(std::ostream& os, const arr<N>& a){
+std::ostream& operator<<(std::ostream& os, const arr<N>& arr_out){
     os<<"[ ";
-    for(int i = 0; i < N; i++) os<<a[i]<<" ";
+    for(int i = 0; i < N; i++) os << arr_out[i] << " ";
     os<<"]\n";
     return os;
 }
 
 template <size_t N>
-arr<N> operator+(const arr<N>& a, const arr<N>& b){
-    arr<N> c;
-    for(size_t i = 0; i < N; i++) c[i] = a[i] + b[i];
-    return c;
+arr<N> operator+(const arr<N>& lhs, const arr<N>& rhs){
+    arr<N> res;
+    for(size_t i = 0; i < N; i++) res[i] = lhs[i] + rhs[i];
+    return res;
 }
 
 template <size_t N>
-arr<N> operator-(const arr<N>& a, const arr<N>& b){
-    arr<N> c;
-    for(int i = 0; i < N; i++) c[i] = a[i] - b[i];
-    return c;
+arr<N> operator-(const arr<N>& lhs, const arr<N>& rhs){
+    arr<N> res;
+    for(int i = 0; i < N; i++) res[i] = lhs[i] - rhs[i];
+    return res;
 }
 
 template <size_t N>
-double operator*(const arr<N>& a, const arr<N>& b){
-    double c = 0.0;
-    for(int i = 0; i < N; i++) c += a[i] * b[i];
-    return c;
+double operator*(const arr<N>& lhs, const arr<N>& rhs){
+    double res = 0.0;
+    for(int i = 0; i < N; i++) res += lhs[i] * rhs[i];
+    return res;
 }
 
 template <size_t N>
-arr<N> ElProd(const arr<N>& a, const arr<N>&b){
-    arr<N> c;
+arr<N> ElProd(const arr<N>& lhs, const arr<N>& rhs){
+    arr<N> res;
     for(int i=0; i<N; i++){
-        c[i] = a[i] * b[i];
+        res[i] = lhs[i] * rhs[i];
     }
-    return c;
+    return res;
 }
 
 template <size_t N>
-double norm(const arr<N>& a){
-    return std::sqrt(a*a);
+double norm(const arr<N>& arr_in){
+    return std::sqrt(arr_in * arr_in);
 }
 
 template <size_t N>
-arr<N> operator*(const arr<N>& a, int b){
-    arr<N> c;
-    for(int i = 0; i < N; i++) c[i] = a[i] * b;
-    return c;
+arr<N> operator*(const arr<N>& lhs, int rhs){
+    arr<N> res;
+    for(int i = 0; i < N; i++) res[i] = lhs[i] * rhs;
+    return res;
 }
 
 template <size_t N>
-arr<N> operator*(int b, const arr<N>& a){
-    arr<N> c;
-    for(size_t i = 0; i < N; i++) c[i] = a[i] * b;
-    return c;
+arr<N> operator*(int lhs, const arr<N>& rhs){
+    arr<N> res;
+    for(size_t i = 0; i < N; i++) res[i] = rhs[i] * lhs;
+    return res;
 }
 
 
 template <size_t N>
-arr<N> operator/(const arr<N>& a, int b){
-    arr<N> c;
-    for(int i = 0; i < N; i++) c[i] = a[i] / b;
-    return c;
+arr<N> operator/(const arr<N>& lhs, int rhs){
+    arr<N> res;
+    for(int i = 0; i < N; i++) res[i] = lhs[i] / rhs;
+    return res;
 }
 #endif // __ALGEBRA_H__
