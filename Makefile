@@ -1,22 +1,31 @@
 # -*- Makefile -*-
 
-## sherlock
 CXX = /usr/local/bin/g++-10
-CXXFLAGS = -std=c++17 -O3 -Wall
-
-all:main.out, MD.out, test.out
+CXXFLAGS = -std=c++17 -O2 -Wall
+BUILD_DIR = build
+PROGRAM = $(BUILD_DIR)/diamondMC
+TEST = $(BUILD_DIR)/test
+#all:main.out, MD.out, test.out
+all:$(BUILD_DIR) $(PROGRAM)
 .PHONY: all
 
-main.out:main.cpp src/*.cpp src/*.hpp utils/*.hpp
-	$(CXX) $(CXXFLAGS)	main.cpp src/*.cpp -o build/main.out
+$(BUILD_DIR):
+	mkdir -p $@
 
-MD.out:mainMD.cpp srcMD/*.cpp srcMD/*.hpp utils/*.hpp
-	$(CXX) $(CXXFLAGS) mainMD.cpp srcMD/*.cpp -o build/MD.out
+SRC_FILES = $(wildcard src/*.cpp utils/*.hpp)
+SRC_HEADERS = $(wildcard src/*.hpp utils/*.cpp)
+$(PROGRAM):main.cpp $(SRC_FILES) $(SRC_HEADERS)
+	@echo "Building  : " $@
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
-test.out:test.cpp src/*.cpp src/*.hpp utils/*.hpp
-	$(CXX) $(CXXFLAGS)	test.cpp src/*.cpp -o build/test.out
+$(TEST):main.cpp $(SRC_FILES) $(SRC_HEADERS)
+	@echo "Building  : " $@
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
 clean:
 	@echo "clean up..."
-	rm -rf build/*.o
-	rm -rf build/*.out
+	rm -f $(BUILD_DIR)/*.o
+	rm -f $(BUILD_DIR)/*.out
+	rm -f $(PROGRAM)
+	rm -f $(TEST)
 .PHONY: clean
