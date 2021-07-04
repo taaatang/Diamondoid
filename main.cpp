@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "utils/utils.hpp"
+#include "src/utils.hpp"
 #include "src/random.hpp"
 #include "src/molecule.hpp"
 #include "src/cluster.hpp"
