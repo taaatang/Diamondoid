@@ -41,7 +41,7 @@ inline void mkdir_fs(const std::string& dir) {
 }
 
 template <class T>
-inline void save(T *d_pt, int size, std::ofstream *f_pt, const std::string& filename, bool is_app=false){
+inline void save(T *d_pt, size_t size, std::ofstream *f_pt, const std::string& filename, bool is_app=false){
     if(is_app)f_pt->open(filename, std::ios::binary|std::ios::app);
     else f_pt->open(filename, std::ios::binary);
     if (f_pt->is_open()){
