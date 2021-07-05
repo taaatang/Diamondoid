@@ -18,7 +18,6 @@ const int MAX_TRY = 2;
 class Cluster{
 public:
     Cluster(int na, int nb, int nc);
-    ~Cluster(){};
 
     Atom* getRandPos();
 
@@ -31,8 +30,11 @@ public:
     void rmvPos(Molecule* mol);
     void recenter();
     int countBond();
+    void getBox(Molecule* excluded, arr<3> &minimum, arr<3> &maximum) const;
+    double getVol() const { return volume; }
 
     void setTemp(double T) { temp = T; }
+    void setPressure(double P) { pressure = P; }
     void init(std::vector<Molecule*>& mols);
     void singleStep(double d = -1.0);
     void compute();
@@ -44,7 +46,9 @@ public:
     void saveVacancy(const std::string& filename);
 
 private:
-    double temp;
+    double temp{1.0};
+    double pressure{0.0};
+    double volume;
     Lattice Latt;
     int curMolIdx;
     int totBond{0};
@@ -54,6 +58,22 @@ private:
     std::vector<int> compatible, uncompatible;
     std::vector<int> vacancy;
 };
+
+void boundingBox(const std::vector<Atom*>& molecule, arr<3>& minimum, arr<3>& maximum, int empty = -100) {
+    if (molecule.empty()) {
+        return;
+    }
+    if (minimum[0] == empty) {
+        minimum = molecule[0]->coord;
+    }
+    if (maximum[0] == empty) {
+        maximum = molecule[0]->coord;
+    }
+    for (const auto& atom : molecule) {
+        min(minimum, atom->coord);
+        max(maximum, atom->coord);
+    }
+}
 
 void Cluster::clustering(int size) {
     unvisit(&Latt.latt);
@@ -103,6 +123,7 @@ Cluster::Cluster(int na, int nb, int nc):Latt(na,nb,nc),curMolIdx(-1){
 void Cluster::init(std::vector<Molecule*>& mols){
     std::cout<<"\nBegin init...\n";
     int count = 0;
+    setPressure(0.0);
     for(auto &mol : mols) {
         mol->idx = count; 
         count++;
@@ -114,7 +135,12 @@ void Cluster::init(std::vector<Molecule*>& mols){
     }
     computeSurf();
     computePos();
-    std::cout << "Finished init. Total Bond: " << countBond() << ".\n";
+    arr<3> bmin;
+    arr<3> bmax;
+    getBox(nullptr, bmin, bmax);
+    auto box = bmax - bmin;
+    volume = getVolume(box);
+    std::cout << "Finished init. Total Bond: " << countBond() << ". Cluster box " << box << std::endl;
 }
 
 void Cluster::singleStep(double d) {
@@ -148,9 +174,29 @@ bool Cluster::add(Molecule* mol, int tryNum, double d) {
             if (d > 0 && mol->jumpDistance() > d) {
                 continue;
             }
-            auto bondNum = mol->countBondNext();
-            if(bondNum > mol->bondNum || diceD() < std::exp((bondNum - mol->bondNum) / temp)) {
+            arr<3> minB, maxB;
+            arr<3> minM, maxM;
+            minM.fill(-10000);
+            maxM.fill(-10000);
+            getBox(mol, minB, maxB);
+//            std::cout << "minB:" << minB << ", maxB:" << maxB;
+            boundingBox(mol->next, minM, maxM, -10000);
+//            std::cout << "\nnext molecule positions:\n";
+//            for (const auto& atom : mol->next) {
+//                std::cout << "atom:" << atom->coord << std::endl;
+//            }
+//            std::cout << ", minM:" << minM << ", maxM:" << maxM << std::endl << std::endl;
+            min(minB, minM);
+            max(maxB, maxM);
+            auto box = maxB - minB;
+            auto volumeNext = getVolume(box);
+            auto bondNumNext = mol->countBondNext();
+            double Ei = pressure * volume - mol->bondNum;
+            double Ef = pressure * volumeNext - bondNumNext;
+//            std::cout << "Ei: " << Ei << "Vi, :" << volume << ", Bi:" << mol->bondNum << "-> Ef: " << Ef << ", Vf:" << volumeNext << ", Bf:" << bondNumNext << std::endl;
+            if(diceD() < std::exp((Ei - Ef) / temp)) {
                 flag = true;
+                volume = volumeNext;
                 break;
             }
         }
@@ -272,4 +318,16 @@ void Cluster::saveVacancy(const std::string& filename) {
         save<int>(Latt.latt.at(i).coord.data(), 3, &outfile, filename, true);
     }
 }
+
+void Cluster::getBox(Molecule *excluded, arr<3> &minimum, arr<3> &maximum) const {
+    int empty = -1000000;
+    minimum.fill(empty);
+    maximum.fill(empty);
+    for (const auto& mol : structure) {
+        if (mol != excluded) {
+            boundingBox(mol->cur, minimum, maximum, empty);
+        }
+    }
+}
+
 #endif // __CLUSTER_H__
