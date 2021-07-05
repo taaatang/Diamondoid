@@ -1,21 +1,21 @@
 #include <iostream>
-#include "src/algebra.hpp"
-#include "src/randoms.hpp"
-#include "src/MD.hpp"
-int main(){
-    // std::cout<<"Mol size:"<<Adamantane.size()<<"\n";
-    // for(auto a:Adamantane)std::cout<<a;
-    // ConstructMol();
-    // std::cout<<"IMat:"<<ComputeInert();
-    Initialization();
-    while(NotFinished()){
-        SingleStep();
+#include "src/random.hpp"
+#include "src/paras.hpp"
+using namespace std;
+
+int main ( ) {
+    Parameters para("/Users/tatang/Documents/work/projects/PPP", {"input.txt"});
+    randomSeed(para.mapi.at("random seed"));
+    cout<<"test diceI:";
+    for (int i = 0; i < 10; ++i) {
+        cout<<diceI(10)<<" ";
     }
-    InitMeasure();
-    while(NotFinishedMeasure()){
-        SingleStep();
-        if(isMeasureRdf())EvalRdf();
+    cout<<"\n";
+
+    cout<<"test diceD:";
+    for (int i = 0; i < 10; ++i) {
+        cout<<diceD()<<" ";
     }
-    saveRdf();
+    cout<<"\n"; 
     return 0;
 }
