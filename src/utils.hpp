@@ -26,6 +26,16 @@ public:
     }
 };
 
+std::string tostr(double val, int digit){
+    std::ostringstream strTmp;
+    strTmp<<std::fixed<<std::setprecision(digit)<<val;
+    return strTmp.str();
+}
+
+std::string tostr(int val){
+    return std::to_string(val);
+}
+
 inline void assert_msg(bool condition, const std::string& msg){
     if(!condition){
         std::cout<<msg<<std::endl;

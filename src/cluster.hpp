@@ -19,7 +19,6 @@ const int MAX_TRY = 2;
 class Cluster{
 public:
     Cluster(int na, int nb, int nc);
-    ~Cluster(){};
 
     Atom* getRandPos();
 
@@ -32,20 +31,25 @@ public:
     void rmvPos(Molecule* mol);
     void recenter();
     int countBond();
+    void getBox(Molecule* excluded, arr<3> &minimum, arr<3> &maximum) const;
+    double getVol() const { return volume; }
 
     void setTemp(double T) { temp = T; }
+    void setPressure(double P) { pressure = P; }
     void init(std::vector<Molecule*>& mols);
     void singleStep(double d = -1.0);
     void compute();
 
     void clustering(int size = 100);
 
-    void saveCoords(std::string filename);
-    void saveSurface(std::string filename);
-    void saveVacancy(std::string filename);
+    void saveCoords(const std::string& filename);
+    void saveSurface(const std::string& filename);
+    void saveVacancy(const std::string& filename);
 
 private:
-    double temp;
+    double temp{1.0};
+    double pressure{0.0};
+    double volume;
     Lattice Latt;
     int curMolIdx;
     int totBond{0};
@@ -55,6 +59,22 @@ private:
     std::vector<int> compatible, uncompatible;
     std::vector<int> vacancy;
 };
+
+void boundingBox(const std::vector<Atom*>& molecule, arr<3>& minimum, arr<3>& maximum, int empty = -100) {
+    if (molecule.empty()) {
+        return;
+    }
+    if (minimum[0] == empty) {
+        minimum = molecule[0]->coord;
+    }
+    if (maximum[0] == empty) {
+        maximum = molecule[0]->coord;
+    }
+    for (const auto& atom : molecule) {
+        min(minimum, atom->coord);
+        max(maximum, atom->coord);
+    }
+}
 
 void Cluster::clustering(int size) {
     unvisit(&Latt.latt);
@@ -104,6 +124,7 @@ Cluster::Cluster(int na, int nb, int nc):Latt(na,nb,nc),curMolIdx(-1){
 void Cluster::init(std::vector<Molecule*>& mols){
     std::cout<<"\nBegin init...\n";
     int count = 0;
+    setPressure(0.0);
     for(auto &mol : mols) {
         mol->idx = count; 
         count++;
@@ -115,7 +136,12 @@ void Cluster::init(std::vector<Molecule*>& mols){
     }
     computeSurf();
     computePos();
-    std::cout << "Finished init. Total Bond: " << countBond() << ".\n";
+    arr<3> bmin;
+    arr<3> bmax;
+    getBox(nullptr, bmin, bmax);
+    auto box = bmax - bmin;
+    volume = getVolume(box);
+    std::cout << "Finished init. Total Bond: " << countBond() << ". Cluster box " << box << std::endl;
 }
 
 void Cluster::singleStep(double d) {
@@ -149,9 +175,29 @@ bool Cluster::add(Molecule* mol, int tryNum, double d) {
             if (d > 0 && mol->jumpDistance() > d) {
                 continue;
             }
-            auto bondNum = mol->countBondNext();
-            if(bondNum > mol->bondNum || diceD() < std::exp((bondNum - mol->bondNum) / temp)) {
+            arr<3> minB, maxB;
+            arr<3> minM, maxM;
+            minM.fill(-10000);
+            maxM.fill(-10000);
+            getBox(mol, minB, maxB);
+//            std::cout << "minB:" << minB << ", maxB:" << maxB;
+            boundingBox(mol->next, minM, maxM, -10000);
+//            std::cout << "\nnext molecule positions:\n";
+//            for (const auto& atom : mol->next) {
+//                std::cout << "atom:" << atom->coord << std::endl;
+//            }
+//            std::cout << ", minM:" << minM << ", maxM:" << maxM << std::endl << std::endl;
+            min(minB, minM);
+            max(maxB, maxM);
+            auto box = maxB - minB;
+            auto volumeNext = getVolume(box);
+            auto bondNumNext = mol->countBondNext();
+            double Ei = pressure * volume - mol->bondNum;
+            double Ef = pressure * volumeNext - bondNumNext;
+//            std::cout << "Ei: " << Ei << "Vi, :" << volume << ", Bi:" << mol->bondNum << "-> Ef: " << Ef << ", Vf:" << volumeNext << ", Bf:" << bondNumNext << std::endl;
+            if(diceD() < std::exp((Ei - Ef) / temp)) {
                 flag = true;
+                volume = volumeNext;
                 break;
             }
         }
@@ -227,25 +273,29 @@ int Cluster::countBond(){
     return totBond;
 }
 
-void Cluster::saveCoords(std::string filename){
+void Cluster::saveCoords(const std::string& filename){
     if(structure.empty()) return;
     std::ofstream outfile;
     save<int>(structure[0]->cur[0]->coord.data(),3,&outfile,filename);
-    for(int i = 1; i < (int)structure[0]->cur.size(); i++)save<int>(structure[0]->cur[i]->coord.data(),3,&outfile,filename,true);
-    for(int m = 1; m < (int)structure.size(); m++){
-        for(int i = 0; i<(int)structure[m]->cur.size();i++)save<int>(structure[m]->cur[i]->coord.data(),3,&outfile,filename,true);
+    for(int i = 1; i < (int)structure[0]->cur.size(); i++) {
+        save<int>(structure[0]->cur[i]->coord.data(),3,&outfile,filename,true);
+    }
+    for(int m = 1; m < (int)structure.size(); m++) {
+        for(auto & i : structure[m]->cur) {
+            save<int>(i->coord.data(),3,&outfile,filename,true);
+        }
     }
 }
 
-void Cluster::saveSurface(std::string filename) {
+void Cluster::saveSurface(const std::string& filename) {
     std::ofstream outfile;
     save<int>(nullptr, 0, &outfile, filename + "_comp.dat"); 
-    for (int i = 0; i < (int)compatible.size(); ++i) {
-        save<int>(Latt.latt.at(compatible[i]).coord.data(), 3, &outfile, filename+"_comp.dat", true); 
+    for (int i : compatible) {
+        save<int>(Latt.latt.at(i).coord.data(), 3, &outfile, filename+"_comp.dat", true);
     }
     save<int>(nullptr, 0, &outfile, filename + "_uncomp.dat");
-    for (int i = 0; i < (int)uncompatible.size(); ++i) {
-        save<int>(Latt.latt.at(uncompatible[i]).coord.data(), 3, &outfile, filename+"_uncomp.dat", true); 
+    for (int i : uncompatible) {
+        save<int>(Latt.latt.at(i).coord.data(), 3, &outfile, filename+"_uncomp.dat", true);
     }
 
     // if (!compatible.empty()) {
@@ -262,11 +312,23 @@ void Cluster::saveSurface(std::string filename) {
     // }
 }
 
-void Cluster::saveVacancy(std::string filename) {
+void Cluster::saveVacancy(const std::string& filename) {
     std::ofstream outfile;
     save<int>(nullptr, 0, &outfile, filename);
-    for (int i = 0; i < (int)vacancy.size(); ++i) {
-        save<int>(Latt.latt.at(vacancy[i]).coord.data(), 3, &outfile, filename, true); 
+    for (int i : vacancy) {
+        save<int>(Latt.latt.at(i).coord.data(), 3, &outfile, filename, true);
     }
 }
+
+void Cluster::getBox(Molecule *excluded, arr<3> &minimum, arr<3> &maximum) const {
+    int empty = -1000000;
+    minimum.fill(empty);
+    maximum.fill(empty);
+    for (const auto& mol : structure) {
+        if (mol != excluded) {
+            boundingBox(mol->cur, minimum, maximum, empty);
+        }
+    }
+}
+
 #endif // __CLUSTER_H__
