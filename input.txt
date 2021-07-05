@@ -1,25 +1,15 @@
-data dir:s:/oak/stanford/groups/tpd/tatang/PPP/batch1
-molecule name:s:Ada # Ada 10 | Tria 18 | Tetra 22 | Penta 26
+data dir:s:/scratch/users/tatang/PPP/batch4_2 #/oak/stanford/groups/tpd/tatang/PPP/batch2
+molecule name:s:MOLNAME # Ada 10 | Dia 14 | Tria 18 | Tetra 22 | Penta/Penta1212 26
 
-#molecule name:s:Dia
-
-#molecule name:s:Tria
-
-#molecule name:s:Tetra
-
-#molecule name:s:Penta
-
-#molecule name:s:Penta1212
-
-molecule num:i:260
+molecule num:i:MOLNUM
 
 random seed:i:1
-heat step:i:10000
-anneal step:i:200000
-cool step:i:40000
-init T:d:2.5
-final T:d:0.2
-measure step:i:500
+heat step:i:100000
+anneal step:i:4000000
+cool step:i:1000000
+init T:d:T_INIT
+final T:d:T_FINAL
+measure step:i:2000
 TAdjust step:i:100
 
-runid:s:0
+runid:s:RUNID

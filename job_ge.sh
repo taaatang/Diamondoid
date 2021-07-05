@@ -7,11 +7,17 @@ cwd=$(pwd)
 # source ./${env}
 # cd ${cwd}
 
-molname=Ada260
-JobDir=Job/${molname}
+molname=Penta1212
+molnum=12
+Ti=2.0
+Tf=0.1
+JobDir=Job/${molname}/${molnum}
 keyword1=RUNID
 keyword2=MOLNAME
-app=main1.out
+keyword3=MOLNUM
+keyword4=T_INIT
+keyword5=T_FINAL
+app=main.out
 script=run_sherlock.sh
 input=input.txt
 
@@ -22,8 +28,8 @@ for i in $(seq 0 1 9)
         inputDir=${appDir}
         mkdir -p ${inputDir}
 
-        sed -e "s/${keyword1}/${i}/g;s/${keyword2}/${molname}/g" ${input} > ${inputDir}/${input}
-        sed -e "s/${keyword1}/${i}/g;s/${keyword2}/${molname}/g" ${script} > ${appDir}/${script}
+        sed -e "s/${keyword1}/${i}/g;s/${keyword2}/${molname}/g;s/${keyword3}/${molnum}/g;s/${keyword4}/${Ti}/g;s/${keyword5}/${Tf}/g" ${input} > ${inputDir}/${input}
+        sed -e "s/${keyword1}/${i}/g;s/${keyword2}/${molname}/g;s/${keyword3}/${molnum}/g" ${script} > ${appDir}/${script}
         cd ${appDir}
         rm -rf job.out
         rm -rf job.err

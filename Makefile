@@ -4,11 +4,11 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -O3 -Wall
 
-all:main1.out, MD.out, test.out
+all:main.out, MD.out, test.out
 .PHONY: all
 
-main1.out:main.cpp src/*.cpp src/*.hpp utils/*.hpp
-	$(CXX) $(CXXFLAGS)	main.cpp src/*.cpp -o build/main1.out
+main.out:main.cpp src/*.cpp src/*.hpp utils/*.hpp
+	$(CXX) $(CXXFLAGS)	main.cpp src/*.cpp -o build/main.out
 
 MD.out:mainMD.cpp srcMD/*.cpp srcMD/*.hpp utils/*.hpp
 	$(CXX) $(CXXFLAGS) mainMD.cpp srcMD/*.cpp -o build/MD.out

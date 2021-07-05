@@ -28,8 +28,8 @@ int main() {
 
     auto measureStruc = [=](int step) {
         int equil_step = HEAT_STEP + ANNEAL_STEP;
-        int m1 = equil_step / 20;
-        int m2 = COOL_STEP / 20;
+        int m1 = equil_step / 40;
+        int m2 = COOL_STEP / 40;
         if (step <= equil_step) {
             return step % m1 == 0;
         } else {
