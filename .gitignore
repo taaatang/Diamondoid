@@ -1,9 +1,14 @@
 #.vscode
+.vscode
+.idea
 .DS_Store
 
 data/
-Jupyter/pics/
-Jupyter/testPics
+Jupyter/
+PPP/
+
+input.txt
+
 *.jpg
 *.png
 *.eps

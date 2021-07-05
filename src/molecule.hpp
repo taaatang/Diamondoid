@@ -30,12 +30,15 @@ public:
     void genidmap(int root, Atom* dest);
     bool tryFill(Atom* dest);
     bool tryAll(Atom* dest);
+    std::array<double, 3> computeCM(std::vector<Atom*> &atoms);
+    double jumpDistance();
     // virtual bool tryFill(Atom* dest, int repidx)=0;
     
     int idx{0};
     std::vector<Atom> *mol;
     VecI idmap; // map mol bond idx to lattice bondidx. idmap[mol_bidx] = latt_bidx
     std::vector<Atom*> cur, next;
+    std::array<double, 3> cm; // center of mass
     int bondNum{0};
 };
 class Adamantane:public Molecule{
@@ -116,12 +119,16 @@ bool Molecule::isSurface() const {
 
 int Molecule::getRandRep() const { return diceI(mol->size()-1);}
 
-void Molecule::move(){
+void Molecule::move() {
     // std::cout<<"cur:"<<cur.size()<<",next:"<<next.size()<<"\n";
-    cur = std::move(next);next.clear();
+    cur = std::move(next);
+    cm = computeCM(cur);
+    next.clear();
     // std::cout<<"cur:"<<cur.size()<<",next:"<<next.size()<<"\n";
-    assert(cur.size()==mol->size());
-    for(auto& atom:cur) atom->idx = idx;
+    assert(cur.size() == mol->size());
+    for(auto &atom : cur) {
+        atom->idx = idx;
+    }
 }
 
 void Molecule::putBack(){
@@ -251,6 +258,25 @@ bool Molecule::tryAll(Atom* dest) {
         }
     } while (std::next_permutation(idmap.begin(), idmap.end()));
     return false;
+}
+
+std::array<double, 3> Molecule::computeCM(std::vector<Atom*> &atoms) {
+    std::array<int, 3> tmp{0, 0, 0};
+    for (auto &atom : atoms) {
+        tmp = tmp + atom->coord;
+    }
+    double size = double(atoms.size());
+    return std::array<double, 3> {tmp[0]/size, tmp[1]/size, tmp[2]/size};
+}
+
+double Molecule::jumpDistance() {
+    auto cm_next = computeCM(next);
+    double ds = 0.0;
+    for(int i = 0; i < 3; ++i) {
+        auto d = cm[i] - cm_next[i];
+        ds += d * d;
+    }
+    return std::sqrt(ds);
 }
 
 Adamantane::Adamantane(int idx_in,std::vector<Atom>* mol_):Molecule(idx_in){

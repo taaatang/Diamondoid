@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "utils/utils.hpp"
+#include "src/utils.hpp"
 #include "src/random.hpp"
 #include "src/molecule.hpp"
 #include "src/cluster.hpp"
@@ -72,7 +72,7 @@ int main() {
     std::vector<int> bondNum;
     for (int stepCount = 1; stepCount <= TOT_STEP; ++stepCount){
 
-        clus.singleStep();
+        clus.singleStep(JUMP_LIMIT);
 
         if(measureBond(stepCount)){
             auto bnum = clus.countBond();
@@ -104,7 +104,7 @@ int main() {
 
     // save measured bond num
     std::ofstream outf;
-    save<int>(bondNum.data(),bondNum.size(),&outf,dir+"/bondNum.dat");
+    save<int>(bondNum.data(), bondNum.size(), &outf,dir+"/bondNum.dat");
     timer.tok();
     std::cout<<"\nMonte Carlo time:"<<timer.elapse()/1000.0<<"s.\n";
 

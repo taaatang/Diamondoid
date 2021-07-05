@@ -1,3 +1,6 @@
+#ifndef __CONFIG_H__
+#define __CONFIG_H__
+
 #include "paras.hpp"
 
 Parameters para(".", {"input.txt"});
@@ -18,3 +21,7 @@ double INIT_TEMP = para.mapd.at("init T");
 double FINAL_TEMP = para.mapd.at("final T");
 int TOT_STEP = HEAT_STEP + ANNEAL_STEP + COOL_STEP;
 int PRINT_STEP = (HEAT_STEP + ANNEAL_STEP + COOL_STEP)/10;
+
+double JUMP_LIMIT = para.mapd.at("jump limit");
+
+#endif // __CONFIG_H__

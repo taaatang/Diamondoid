@@ -6,8 +6,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "../utils/utils.hpp"
-
+#include "utils.hpp"
 #include "atom.hpp"
 #include "molecule.hpp"
 #include "lattice.hpp"
@@ -24,7 +23,7 @@ public:
 
     Atom* getRandPos();
 
-    bool add(Molecule* mol, int tryNum = 1);
+    bool add(Molecule* mol, int tryNum = 1, double d = -1.0);
     void push_back(Molecule* mol){structure.push_back(mol);}
     void computeSurf();
     void computePos();
@@ -36,7 +35,7 @@ public:
 
     void setTemp(double T) { temp = T; }
     void init(std::vector<Molecule*>& mols);
-    void singleStep();
+    void singleStep(double d = -1.0);
     void compute();
 
     void clustering(int size = 100);
@@ -105,55 +104,61 @@ Cluster::Cluster(int na, int nb, int nc):Latt(na,nb,nc),curMolIdx(-1){
 void Cluster::init(std::vector<Molecule*>& mols){
     std::cout<<"\nBegin init...\n";
     int count = 0;
-    for(auto& mol:mols) {
-        mol->idx = count; count++;
-        if(!add(mol, INIT_MAX_TRY)){
-            std::cout<<"Failed to add a molecule!\n";
+    for(auto &mol : mols) {
+        mol->idx = count; 
+        count++;
+        if(!add(mol, INIT_MAX_TRY)) {
+            std::cout << "Failed to add a molecule!\n";
             exit(1);
         }
         else structure.push_back(mol);
     }
     computeSurf();
     computePos();
-    std::cout<<"Finished init. Total Bond: "<<countBond()<<".\n";
+    std::cout << "Finished init. Total Bond: " << countBond() << ".\n";
 }
 
-void Cluster::singleStep(){
+void Cluster::singleStep(double d) {
     auto i = diceI(surface.size()-1);
     auto molIdx = surface[i];
     auto mol = structure.at(molIdx);
     rmvPos(mol);
-    if(add(mol, MAX_TRY)){
+    if(add(mol, MAX_TRY, d)) {
         computeSurf();
-    }else{
+    } else {
         mol->putBack();
         addPos(mol);
     }
 }
 
-Atom* Cluster::getRandPos(){
+Atom* Cluster::getRandPos() {
     return &Latt.latt.at(positions.at(diceI(positions.size()-1)));
 }
 
-bool Cluster::add(Molecule* mol, int tryNum){
+bool Cluster::add(Molecule* mol, int tryNum, double d) {
     // mol->setid(structure.size());
     int count = 0;
     bool flag = false;
-    while(count<tryNum){
+    while(count < tryNum) {
         count++;
         // std::cout<<"Try add mol "<<mol->idx<<", count:"<<count<<"\n";
         auto dest = getRandPos();
         // if(mol->tryFill(dest,mol->getRandRep())){
-        if(mol->tryFill(dest)){
+        if(mol->tryFill(dest)) {
+            // limit the distance a molecule can move in a single step
+            if (d > 0 && mol->jumpDistance() > d) {
+                continue;
+            }
             auto bondNum = mol->countBondNext();
-            if(bondNum>mol->bondNum){flag=true;break;}
-            else{
-                if(diceD()<std::exp((bondNum-mol->bondNum)/temp)){flag=true;break;}
+            if(bondNum > mol->bondNum || diceD() < std::exp((bondNum - mol->bondNum) / temp)) {
+                flag = true;
+                break;
             }
         }
     }
     if(flag) {
-        mol->move();addPos(mol); 
+        mol->move();
+        addPos(mol); 
         // std::cout<<"Succeed Jump!\n";
     }
     // else std::cout<<"Failed Jump!\n";
