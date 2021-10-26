@@ -75,6 +75,7 @@ void boundingBox(const std::vector<Atom*>& molecule, arr<3>& minimum, arr<3>& ma
     }
 }
 
+/// Find vacancy
 void Cluster::clustering(int size) {
     unvisit(&Latt.latt);
     int empty = 0;
@@ -144,7 +145,7 @@ void Cluster::init(std::vector<Molecule*>& mols){
 }
 
 void Cluster::singleStep(double d) {
-    auto i = diceI(surface.size()-1);
+    auto i = diceI(int(surface.size())-1);
     auto molIdx = surface[i];
     auto mol = structure.at(molIdx);
     rmvPos(mol);
@@ -210,6 +211,7 @@ bool Cluster::add(Molecule* mol, int tryNum, double d) {
     return flag;
 }
 
+/// Find all molecules on the surface
 void Cluster::computeSurf(){
     surface.clear();
     for(int i=0; i < (int)structure.size(); i++){
@@ -217,7 +219,8 @@ void Cluster::computeSurf(){
     }
 }
 
-void Cluster::computePos() {
+/// Find all surface positions (available to attach new molecule)
+void Cluster::computePos(){
     positions.clear();
     for (auto& mol : structure) {
         auto surf = mol->surf();
@@ -227,6 +230,7 @@ void Cluster::computePos() {
     std::unique(positions.begin(), positions.end());
 }
 
+/// Find compatible/uncompatible surface positions
 void Cluster::evalPos() {
     compatible.clear();
     uncompatible.clear();
