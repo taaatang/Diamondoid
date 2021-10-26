@@ -142,8 +142,10 @@ void Cluster::init(std::vector<Molecule*>& mols){
 }
 
 void Cluster::singleStep(double d) {
-    auto i = diceI(int(surface.size())-1);
-    auto molIdx = surface[i];
+    // random pick from surface molecules
+//    auto i = diceI(int(surface.size())-1);
+//    auto molIdx = surface[i];
+    auto molIdx = diceI(int(structure.size()) - 1); ///< random pick from all atoms
     auto mol = structure.at(molIdx);
     rmvPos(mol);
     if(add(mol, MAX_TRY, d)) {
