@@ -1,7 +1,7 @@
 # -*- Makefile -*-
 
 CXX = g++
-CXXFLAGS = -std=c++17 -O2 -Wall
+CXXFLAGS = -std=c++20 -O2 -Wall
 BUILD_DIR = build
 PROGRAM = $(BUILD_DIR)/diamondMC
 TEST = $(BUILD_DIR)/test

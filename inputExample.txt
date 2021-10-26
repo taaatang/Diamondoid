@@ -1,0 +1,20 @@
+data dir:s:/Volumes/Sandisk/ProjectData/Diamondoid/pressureJumpLimit/test
+# molecule name:s:Ada # Ada 10 | Tria 18 | Tetra 22 | Penta 26
+# molecule num:i:100
+
+runid:s:0
+molecule name:s:Penta1212
+atom num:i:1000
+
+random seed:i:1
+
+heat step:i:100
+anneal step:i:100
+cool step:i:200000
+init T:d:0.024
+final T:d:0.024
+measure step:i:200
+TAdjust step:i:100
+
+pressure:d:0.015
+jump limit:d:10

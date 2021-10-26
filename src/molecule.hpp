@@ -1,5 +1,4 @@
-#ifndef __MOLECULE_H__
-#define __MOLECULE_H__
+#pragma once
 
 #include <vector>
 #include <queue>
@@ -18,16 +17,15 @@ public:
 
     void setid(int idx_in) { this->idx = idx_in; }
 
-    std::vector<Atom *> linkedToCluster() const; // find atoms in molecule linked to the bulk
-    int countBondCur(); // count C-C bond in current configuration
-    int countBondNext() const; // count C-C bond in next configuration
-    bool isSurface() const; // judge if molecule has empty nearest C position
+    std::vector<Atom *> linkedToCluster() const; ///< find atoms in molecule linked to the bulk
+    int countBondCur(); ///< count C-C bond in current configuration
+    int countBondNext() const; ///< count C-C bond in next configuration
+    bool isSurface() const; ///< judge if molecule has empty nearest C position
     int getRandRep() const;
 
-    void move(); // move to next
-    void putBack(); // go back to cur
-    void
-    linkedAndSurf(VecI &linked, VecI &surf); // linked: atom in cur linked to bulk; surf: empty C only linked to cur;
+    void move(); ///< move to next position
+    void putBack(); ///< go back to current position
+    void linkedAndSurf(VecI &linked, VecI &surf); ///< linked: atom in cur linked to bulk; surf: empty C only linked to cur;
     VecI surf();
 
     void setNN(int from, int bondid, int to);
@@ -112,8 +110,7 @@ int Molecule::countBondCur() {
     int count = 0;
     for (auto &atom:cur) {
         for (auto &nn:atom->NN) {
-            if (nn == nullptr)continue;
-            if (nn->idx != this->idx and nn->idx != -1) count++;
+            if (nn and nn->idx != this->idx and nn->idx != -1) count++;
         }
     }
     bondNum = count;
@@ -131,11 +128,15 @@ int Molecule::countBondNext() const {
 }
 
 bool Molecule::isSurface() const {
-    for (auto &atom:cur)for (auto &nn:atom->NN)if (nn == nullptr or nn->idx == -1)return true;
+    for (auto &atom: cur) {
+        for (auto &nn: atom->NN) {
+            if (nn == nullptr or nn->idx == -1) return true;
+        }
+    }
     return false;
 }
 
-int Molecule::getRandRep() const { return diceI(mol->size() - 1); }
+int Molecule::getRandRep() const { return diceI(int(mol->size()) - 1); }
 
 void Molecule::move() {
     // std::cout<<"cur:"<<cur.size()<<",next:"<<next.size()<<"\n";
@@ -173,8 +174,7 @@ VecI Molecule::surf() {
     VecI res;
     for (const auto &atom:cur) {
         for (const auto &nn:atom->NN) {
-            if (nn == nullptr)continue;
-            if (nn->idx == -1) { res.push_back(nn->pos); }
+            if (nn and nn->idx == -1) { res.push_back(nn->pos); }
         }
     }
     return res;
@@ -546,6 +546,3 @@ Pentamantane1212::Pentamantane1212(int idx_in, std::vector<Atom> *mol_) : Molecu
         mol_is_set = true;
     }
 }
-
-
-#endif // __MOLECULE_H__

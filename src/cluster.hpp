@@ -1,5 +1,4 @@
-#ifndef __CLUSTER_H__
-#define __CLUSTER_H__
+#pragma once
 
 #include <vector>
 #include <string>
@@ -23,13 +22,12 @@ public:
     Atom* getRandPos();
 
     bool add(Molecule* mol, int tryNum = 1, double d = -1.0);
-    void push_back(Molecule* mol){structure.push_back(mol);}
+    void push_back(Molecule* mol) { structure.push_back(mol); }
     void computeSurf();
     void computePos();
     void evalPos();
     void addPos(Molecule* mol);
     void rmvPos(Molecule* mol);
-    void recenter();
     int countBond();
     void getBox(Molecule* excluded, arr<3> &minimum, arr<3> &maximum) const;
     double getVol() const { return volume; }
@@ -38,7 +36,6 @@ public:
     void setPressure(double P) { pressure = P; }
     void init(std::vector<Molecule*>& mols);
     void singleStep(double d = -1.0);
-    void compute();
 
     void clustering(int size = 100);
 
@@ -76,6 +73,7 @@ void boundingBox(const std::vector<Atom*>& molecule, arr<3>& minimum, arr<3>& ma
     }
 }
 
+/// Find vacancy
 void Cluster::clustering(int size) {
     unvisit(&Latt.latt);
     int empty = 0;
@@ -145,8 +143,10 @@ void Cluster::init(std::vector<Molecule*>& mols){
 }
 
 void Cluster::singleStep(double d) {
-    auto i = diceI(surface.size()-1);
-    auto molIdx = surface[i];
+    // random pick from surface molecules
+//    auto i = diceI(int(surface.size())-1);
+//    auto molIdx = surface[i];
+    auto molIdx = diceI(int(structure.size()) - 1); ///< random pick from all atoms
     auto mol = structure.at(molIdx);
     rmvPos(mol);
     if(add(mol, MAX_TRY, d)) {
@@ -157,10 +157,12 @@ void Cluster::singleStep(double d) {
     }
 }
 
+/// Get a random empty atom position on the surface of the cluster
 Atom* Cluster::getRandPos() {
     return &Latt.latt.at(positions.at(diceI(positions.size()-1)));
 }
 
+/// Try add molecule on to the surface.
 bool Cluster::add(Molecule* mol, int tryNum, double d) {
     // mol->setid(structure.size());
     int count = 0;
@@ -211,6 +213,7 @@ bool Cluster::add(Molecule* mol, int tryNum, double d) {
     return flag;
 }
 
+/// Find all molecules on the surface
 void Cluster::computeSurf(){
     surface.clear();
     for(int i=0; i < (int)structure.size(); i++){
@@ -218,7 +221,8 @@ void Cluster::computeSurf(){
     }
 }
 
-void Cluster::computePos() {
+/// Find all surface positions (available to attach new molecule)
+void Cluster::computePos(){
     positions.clear();
     for (auto& mol : structure) {
         auto surf = mol->surf();
@@ -228,6 +232,7 @@ void Cluster::computePos() {
     std::unique(positions.begin(), positions.end());
 }
 
+/// Find compatible/uncompatible surface positions
 void Cluster::evalPos() {
     compatible.clear();
     uncompatible.clear();
@@ -241,12 +246,13 @@ void Cluster::evalPos() {
     }
 }
 
+/// Update empty surface positions after adding a molecule
 void Cluster::addPos(Molecule* mol){
     std::vector<int> linked, surf;
     mol->linkedAndSurf(linked,surf);
     for(auto val:linked){
         auto low = std::lower_bound(positions.begin(),positions.end(),val);
-        if(low!=positions.end()) positions.erase(low);
+        if(low!=positions.end() and *low == val) positions.erase(low);
     }
     positions.insert(positions.end(),surf.begin(),surf.end());
     std::sort(positions.begin(),positions.end());
@@ -254,25 +260,28 @@ void Cluster::addPos(Molecule* mol){
     // positions.erase(last,positions.end());
 }
 
+/// Remove empty surface positions after remove a molecule
 void Cluster::rmvPos(Molecule* mol){
     std::vector<int> linked, surf;
     mol->linkedAndSurf(linked,surf); 
     for(auto val:surf){
         auto low = std::lower_bound(positions.begin(),positions.end(),val);
-        if(low!=positions.end()) positions.erase(low);
+        if(low!=positions.end() and *low == val) positions.erase(low);
     }
     positions.insert(positions.end(),linked.begin(),linked.end());
     std::sort(positions.begin(),positions.end());
     for(auto& atom:mol->cur) atom->idx = -1;
 }
 
+/// Count total C-C bonds
 int Cluster::countBond(){
     totBond = 0;
-    for(auto& mol:structure)totBond+=mol->countBondCur();
+    for (const auto &mol : structure) totBond += mol->countBondCur();
     totBond /= 2;
     return totBond;
 }
 
+/// Save all atom coordinates
 void Cluster::saveCoords(const std::string& filename){
     if(structure.empty()) return;
     std::ofstream outfile;
@@ -287,6 +296,7 @@ void Cluster::saveCoords(const std::string& filename){
     }
 }
 
+/// Save compatible/incompatible surface positions
 void Cluster::saveSurface(const std::string& filename) {
     std::ofstream outfile;
     save<int>(nullptr, 0, &outfile, filename + "_comp.dat"); 
@@ -297,21 +307,9 @@ void Cluster::saveSurface(const std::string& filename) {
     for (int i : uncompatible) {
         save<int>(Latt.latt.at(i).coord.data(), 3, &outfile, filename+"_uncomp.dat", true);
     }
-
-    // if (!compatible.empty()) {
-    //     save<int>(Latt.latt.at(compatible[0]).coord.data(), 3, &outfile, filename + "_comp.dat");
-    //     for (int i = 1; i < compatible.size(); ++i) {
-    //        save<int>(Latt.latt.at(compatible[i]).coord.data(), 3, &outfile, filename+"_comp.dat", true); 
-    //     }
-    // }
-    // if (!uncompatible.empty()) {
-    //     save<int>(Latt.latt.at(uncompatible[0]).coord.data(), 3, &outfile, filename + "_uncomp.dat");
-    //     for (int i = 1; i < uncompatible.size(); ++i) {
-    //        save<int>(Latt.latt.at(uncompatible[i]).coord.data(), 3, &outfile, filename+"_uncomp.dat", true); 
-    //     }
-    // }
 }
 
+/// Save vacancy coordinates
 void Cluster::saveVacancy(const std::string& filename) {
     std::ofstream outfile;
     save<int>(nullptr, 0, &outfile, filename);
@@ -320,15 +318,14 @@ void Cluster::saveVacancy(const std::string& filename) {
     }
 }
 
+/// Find bounding box for all atoms
 void Cluster::getBox(Molecule *excluded, arr<3> &minimum, arr<3> &maximum) const {
     int empty = -1000000;
     minimum.fill(empty);
     maximum.fill(empty);
-    for (const auto& mol : structure) {
+    for (const auto &mol: structure) {
         if (mol != excluded) {
             boundingBox(mol->cur, minimum, maximum, empty);
         }
     }
 }
-
-#endif // __CLUSTER_H__
