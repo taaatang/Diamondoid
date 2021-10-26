@@ -27,7 +27,6 @@ public:
     void evalPos();
     void addPos(Molecule* mol);
     void rmvPos(Molecule* mol);
-    void recenter();
     int countBond();
     void getBox(Molecule* excluded, arr<3> &minimum, arr<3> &maximum) const;
     double getVol() const { return volume; }
@@ -36,7 +35,6 @@ public:
     void setPressure(double P) { pressure = P; }
     void init(std::vector<Molecule*>& mols);
     void singleStep(double d = -1.0);
-    void compute();
 
     void clustering(int size = 100);
 
