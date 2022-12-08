@@ -1,5 +1,5 @@
 # Diamond from Diamondoid
-Monte Carlo simulation for comparing diamond crystal formation efficiency using different diamondoid molecules, including: adamantane C$_{10}$H$_{16}$, diamantane C$_{14}$H$_{20}$, triamantane C$_{18}$H$_{24}$, tetramantane C$_{18}$H$_{24}$, pentamantane-1(2,3)4 C$_{26}$H$_{32}$, and pentamantane-1212 C$_{26}$H$_{32}$.
+Monte Carlo simulation for comparing diamond crystal formation efficiency using different diamondoid molecules, including: adamantane, diamantane, triamantane, tetramantane, pentamantane-1(2,3)4, and pentamantane-1212.
 
 ## Install, Build and Run
 Clone this repository. "make all" will compile a program called "diamondMC" in the build directory. The Makefile assumes you are using g++ compiler with c++20 supports. There is no other dependency for this code. You can modify the Makefile if you want to use a different compiler.
