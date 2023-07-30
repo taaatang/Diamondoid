@@ -12,7 +12,7 @@ int main() {
     // temperature
     auto temp = [=](int step) {
         if (step < HEAT_STEP) return INIT_TEMP;
-        else if (step > HEAT_STEP + ANNEAL_STEP) return FINAL_TEMP;
+        else if (step >= HEAT_STEP + ANNEAL_STEP) return FINAL_TEMP;
         else return INIT_TEMP + (FINAL_TEMP - INIT_TEMP) / ANNEAL_STEP * (step - HEAT_STEP);
         // else return INIT_TEMP + (FINAL_TEMP - INIT_TEMP) * (1.0 - std::exp((double)(step-HEAT_STEP)/COOL_STEP))/(1.0 - std::exp(1.0));
     };
