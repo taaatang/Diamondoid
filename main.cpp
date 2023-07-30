@@ -72,11 +72,16 @@ int main() {
 
     // INIT
     Cluster clus(40, 40, 40);
+    std::cout << "init temp = " << temp(0) << std::endl;
     clus.setTemp(temp(0));
     clus.init(Molsptr);
     timer.tok();
     std::cout << "Initialization time:" << timer.elapse() / 1000.0 << "s.\n\n";
     int mstep = 0;
+    {// save initial configuration
+        std::string outfile = dir + "/step_" + std::to_string(mstep) + ".dat";
+        clus.saveCoords(outfile);
+    }
     // MC
     timer.tik();
     std::vector<int> bondNum;
