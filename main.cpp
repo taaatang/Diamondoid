@@ -2,13 +2,30 @@
 #include <vector>
 #include <string>
 #include <cmath>
-#include "src/utils.hpp"
-#include "src/random.hpp"
-#include "src/molecule.hpp"
+
 #include "src/cluster.hpp"
-#include "src/config.hpp"
+#include "src/paras.hpp"
 
 int main() {
+    Parameters para(".", {"input.txt"});
+
+    const std::string dataDir = para.maps.at("data dir");
+    const std::string molName = para.maps.at("molecule name");
+    const std::string runid = para.maps.at("runid");
+    //int molNum = para.mapi.at("molecule num");
+    const int atomNum = para.mapi.at("atom num");
+    const bool isRandseed = para.mapi.at("random seed");
+    const int HEAT_STEP = para.mapi.at("heat step");
+    const int ANNEAL_STEP = para.mapi.at("anneal step");
+    const int COOL_STEP = para.mapi.at("cool step");
+    const int MEASURE_STEP = para.mapi.at("measure step");
+    const int TAdjust_STEP = para.mapi.at("TAdjust step");
+    const double INIT_TEMP = para.mapd.at("init T");
+    const double FINAL_TEMP = para.mapd.at("final T");
+    const int TOT_STEP = HEAT_STEP + ANNEAL_STEP + COOL_STEP;
+    const int PRINT_STEP = (HEAT_STEP + ANNEAL_STEP + COOL_STEP)/10;
+    const double PRESSURE = para.mapd.at("pressure");
+    const double JUMP_LIMIT = para.mapd.at("jump limit");
     // temperature
     auto temp = [=](int step) {
         if (step < HEAT_STEP) return INIT_TEMP;

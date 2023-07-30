@@ -1,5 +1,4 @@
-#ifndef __PARAS_H__
-#define __PARAS_H__
+#pragma once
 
 #include <iostream>
 #include <memory>
@@ -81,5 +80,3 @@ std::ostream& operator<<(std::ostream& os, const map<T>& mymap){
     }
     return os;
 }
-
-#endif // __PARAS_H__

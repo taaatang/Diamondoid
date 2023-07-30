@@ -1,5 +1,4 @@
-#ifndef __ALGEBRA_H__
-#define __ALGEBRA_H__
+#pragma once
 
 #include <iostream>
 #include <array>
@@ -102,4 +101,3 @@ double getVolume(const arr<N> &box) {
     }
     return v;
 }
-#endif // __ALGEBRA_H__

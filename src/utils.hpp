@@ -1,10 +1,7 @@
-#ifndef __UTILS_H__
-#define __UTILS_H__
+#pragma once
 
 #include <iostream>
 #include <chrono>
-#include <filesystem>
-#include <iomanip>
 #include <fstream>
 #include <cassert>
 
@@ -18,37 +15,16 @@ public:
     void tik(){tik_ = std::chrono::system_clock::now(); is_tok = false;}
     void tok(){tok_ = std::chrono::system_clock::now(); is_tok = true;}
     // return duration in unit of ms
-    double elapse(){
-        if (!is_tok) tok();
-        duration_ = tok_ - tik_;
-        is_tok = false;
-        return duration_.count()*1000.0;
-    }
+    double elapse();
 };
 
-std::string tostr(double val, int digit){
-    std::ostringstream strTmp;
-    strTmp<<std::fixed<<std::setprecision(digit)<<val;
-    return strTmp.str();
-}
+std::string tostr(double val, int digit);
 
-std::string tostr(int val){
-    return std::to_string(val);
-}
+std::string tostr(int val);
 
-inline void assert_msg(bool condition, const std::string& msg){
-    if(!condition){
-        std::cout<<msg<<std::endl;
-        exit(1);
-    }
-}
+void assert_msg(bool condition, const std::string& msg);
 
-inline void mkdir_fs(const std::string& dir) {
-    std::filesystem::path p(dir);
-    std::filesystem::create_directories(p);
-    bool succeed = std::filesystem::is_directory(p);
-    assert_msg(succeed, dir + " failed to creat!");
-}
+void mkdir_fs(const std::string& dir);
 
 template <class T>
 inline void save(T *d_pt, size_t size, std::ofstream *f_pt, const std::string& filename, bool is_app=false){
@@ -64,4 +40,3 @@ inline void save(T *d_pt, size_t size, std::ofstream *f_pt, const std::string& f
         exit(1);
     }
 }
-#endif // __UTILS_H__

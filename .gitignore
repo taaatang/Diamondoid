@@ -18,6 +18,7 @@ input.txt
 build/
 
 Job/
+results/
 
 *.o
 *.app

@@ -1,31 +1,25 @@
 # -*- Makefile -*-
 
-CXX = g++
-CXXFLAGS = -std=c++20 -O2 -Wall
+CXX = g++-13
+CXXFLAGS = -std=c++20 -O0 -Wall
 BUILD_DIR = build
 PROGRAM = $(BUILD_DIR)/diamondMC
-TEST = $(BUILD_DIR)/test
-#all:main.out, MD.out, test.out
+
 all:$(BUILD_DIR) $(PROGRAM)
 .PHONY: all
 
 $(BUILD_DIR):
 	mkdir -p $@
 
-SRC_FILES = $(wildcard src/*.cpp utils/*.hpp)
-SRC_HEADERS = $(wildcard src/*.hpp utils/*.cpp)
+SRC_FILES = $(wildcard src/*.cpp)
+SRC_HEADERS = $(wildcard src/*.hpp)
 $(PROGRAM):main.cpp $(SRC_FILES) $(SRC_HEADERS)
 	@echo "Building  : " $@
-	$(CXX) $(CXXFLAGS) -o $@ $^
-
-$(TEST):main.cpp $(SRC_FILES) $(SRC_HEADERS)
-	@echo "Building  : " $@
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	$(CXX) $(CXXFLAGS) -o $@ main.cpp $(SRC_FILES)
 
 clean:
 	@echo "clean up..."
 	rm -f $(BUILD_DIR)/*.o
 	rm -f $(BUILD_DIR)/*.out
 	rm -f $(PROGRAM)
-	rm -f $(TEST)
 .PHONY: clean
