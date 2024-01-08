@@ -60,7 +60,7 @@ void Cluster::init(std::vector<Molecule*>& mols){
     for(auto &mol : mols) {
         mol->idx = count; 
         count++;
-        if(!add(mol, INIT_MAX_TRY)) {
+        if(!add(0, mol, INIT_MAX_TRY)) {
             std::cout << "Failed to add a molecule!\n";
             exit(1);
         }
@@ -76,14 +76,14 @@ void Cluster::init(std::vector<Molecule*>& mols){
     std::cout << "Finished init. Total Bond: " << countBond() << ". Cluster box " << box << std::endl;
 }
 
-void Cluster::singleStep(double d) {
+void Cluster::singleStep(int step, double d) {
     // random pick from surface molecules
 //    auto i = diceI(int(surface.size())-1);
 //    auto molIdx = surface[i];
     auto molIdx = diceI(int(structure.size()) - 1); ///< random pick from all atoms
     auto mol = structure.at(molIdx);
     rmvPos(mol);
-    if(add(mol, MAX_TRY, d)) {
+    if(add(step, mol, MAX_TRY, d)) {
         computeSurf();
     } else {
         mol->putBack();
@@ -97,10 +97,12 @@ Atom* Cluster::getRandPos() {
 }
 
 /// Try add molecule on to the surface.
-bool Cluster::add(Molecule* mol, int tryNum, double d) {
+bool Cluster::add(int step, Molecule* mol, int tryNum, double d) {
     // mol->setid(structure.size());
     int count = 0;
     bool flag = false;
+    double Ei, Ef, Vi, Vf;
+    int Bi, Bf;
     while(count < tryNum) {
         count++;
         // std::cout<<"Try add mol "<<mol->idx<<", count:"<<count<<"\n";
@@ -128,9 +130,13 @@ bool Cluster::add(Molecule* mol, int tryNum, double d) {
             auto box = maxB - minB;
             auto volumeNext = getVolume(box);
             auto bondNumNext = mol->countBondNext();
-            double Ei = pressure * volume - mol->bondNum;
-            double Ef = pressure * volumeNext - bondNumNext;
-//            std::cout << "Ei: " << Ei << "Vi, :" << volume << ", Bi:" << mol->bondNum << "-> Ef: " << Ef << ", Vf:" << volumeNext << ", Bf:" << bondNumNext << std::endl;
+            Ei = pressure * volume - mol->bondNum;
+            Ef = pressure * volumeNext - bondNumNext;
+            Bi = mol->bondNum;
+            Bf = bondNumNext;
+            Vi = volume;
+            Vf = volumeNext;
+        //    std::cout << "Ei: " << Ei << "Vi, :" << volume << ", Bi:" << mol->bondNum << std::endl << "-> Ef: " << Ef << ", Vf:" << volumeNext << ", Bf:" << bondNumNext << std::endl << "p = " << std::exp((Ei - Ef) / temp) << std::endl;
             if(diceD() < std::exp((Ei - Ef) / temp)) {
                 flag = true;
                 volume = volumeNext;
@@ -139,8 +145,21 @@ bool Cluster::add(Molecule* mol, int tryNum, double d) {
         }
     }
     if(flag) {
+        if (detect_config_saved(step) && !m_is_config_saved && Bf > Bi) {
+            mol->saveCoords("molecule_before_jump.dat");
+            addPos(mol);
+            this->saveCoords("prev_cluster.dat");
+            rmvPos(mol);
+        }
         mol->move();
         addPos(mol); 
+        if (detect_config_saved(step) && !m_is_config_saved && Bf > Bi) {
+            mol->saveCoords("molecule_after_jump.dat");
+            this->saveCoords("cur_cluster.dat");
+            m_is_config_saved = true;
+            std::cout << "pressure = " << pressure << std::endl;
+            std::cout << "Ei = " << Ei << ", Vi = " << Vi << ", Bi = " << Bi << std::endl << "->" << std::endl << "Ef = " << Ef << ", Vf = " << Vf << ", Bf = " << Bf << std::endl << "p = " << std::exp((Ei - Ef) / temp) << std::endl;
+        }
         // std::cout<<"Succeed Jump!\n";
     }
     // else std::cout<<"Failed Jump!\n";

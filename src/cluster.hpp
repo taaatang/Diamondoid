@@ -14,7 +14,7 @@ public:
 
     Atom* getRandPos();
 
-    bool add(Molecule* mol, int tryNum = 1, double d = -1.0);
+    bool add(int step, Molecule* mol, int tryNum = 1, double d = -1.0);
     void push_back(Molecule* mol) { structure.push_back(mol); }
     void computeSurf();
     void computePos();
@@ -28,13 +28,17 @@ public:
     void setTemp(double T) { temp = T; }
     void setPressure(double P) { pressure = P; }
     void init(std::vector<Molecule*>& mols);
-    void singleStep(double d = -1.0);
+    void singleStep(int step, double d = -1.0);
 
     void clustering(int size = 100);
 
     void saveCoords(const std::string& filename);
     void saveSurface(const std::string& filename);
     void saveVacancy(const std::string& filename);
+
+    bool detect_config_saved(int step) {
+        return step > 10000;
+    }
 
 private:
     double temp{1.0};
@@ -48,6 +52,7 @@ private:
     std::vector<int> positions;
     std::vector<int> compatible, uncompatible;
     std::vector<int> vacancy;
+    bool m_is_config_saved{false};
 };
 
 void boundingBox(const std::vector<Atom*>& molecule, arr<3>& minimum, arr<3>& maximum, int empty = -100);

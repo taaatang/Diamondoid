@@ -107,7 +107,7 @@ int main() {
     std::cout << "Jump limit: " << dMax << std::endl;
     for (int stepCount = 1; stepCount <= TOT_STEP; ++stepCount) {
 
-        clus.singleStep(dMax);
+        clus.singleStep(stepCount, dMax);
 
         if (measureBond(stepCount)) {
             auto bnum = clus.countBond();

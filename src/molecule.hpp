@@ -49,6 +49,8 @@ public:
     double jumpDistance();
     // virtual bool tryFill(Atom* dest, int repidx)=0;
 
+    void saveCoords(const std::string& filename, bool is_app=false);
+
     int idx{0};
     std::vector<Atom> *mol{nullptr};
     VecI idmap; // map mol bond idx to lattice bondidx. idmap[mol_bidx] = latt_bidx

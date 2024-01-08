@@ -1,4 +1,5 @@
 #include "molecule.hpp"
+#include "utils.hpp"
 
 int Molecule::countBondCur() {
     int count = 0;
@@ -206,6 +207,15 @@ double Molecule::jumpDistance() {
         ds += d * d;
     }
     return std::sqrt(ds);
+}
+
+void Molecule::saveCoords(const std::string& filename, bool is_app) {
+    if (cur.empty()) return;
+    std::ofstream outfile;
+    save<int>(cur[0]->coord.data(),3,&outfile,filename, is_app);
+    for(int i = 1; i < (int)cur.size(); i++) {
+        save<int>(cur[i]->coord.data(),3,&outfile,filename,true);
+    }
 }
 
 Adamantane::Adamantane(int idx_in, std::vector<Atom> *mol_) : Molecule(idx_in) {
